@@ -1,0 +1,91 @@
+# =============================================================================
+# CI/CD — Деплой Фитон Крым на VPS через SSH
+# =============================================================================
+#
+# Необходимые Secrets в GitHub (Settings → Secrets → Actions):
+#   VPS_HOST        — IP-адрес или hostname вашего VPS
+#   VPS_USER        — имя пользователя (например: deploy)
+#   VPS_SSH_KEY     — приватный SSH-ключ (содержимое ~/.ssh/id_rsa)
+#   VPS_PORT        — SSH-порт (обычно 22, можно не указывать)
+#
+# Workflow запускается автоматически при пуше в ветку main.
+# =============================================================================
+
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:     # Позволяет запускать вручную из GitHub Actions
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false   # Дожидаемся завершения текущего деплоя
+
+jobs:
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Checkout (для чтения deploy скрипта) ──────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Деплой на VPS через SSH ───────────────────────────────────────────
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key:      ${{ secrets.VPS_SSH_KEY }}
+          port:     ${{ secrets.VPS_PORT || 22 }}
+          timeout:  600s
+          script: |
+            set -e
+
+            APP_DIR="/var/www/phytoncrimea/repo/Фитон/phyton-crimea"
+
+            echo "=== Переходим в директорию ==="
+            cd "${APP_DIR}"
+
+            echo "=== Git pull ==="
+            git fetch --all
+            git reset --hard origin/main
+
+            echo "=== Устанавливаем зависимости ==="
+            npm ci --prefer-offline
+
+            echo "=== Сборка ==="
+            npm run build
+
+            echo "=== PM2 reload (zero-downtime) ==="
+            if pm2 describe phyton-crimea > /dev/null 2>&1; then
+              pm2 reload phyton-crimea --update-env
+            else
+              pm2 start ecosystem.config.js
+              pm2 save
+            fi
+
+            echo "=== Проверка ==="
+            sleep 3
+            curl -sf http://localhost:3000 > /dev/null || { echo "FAIL: сайт не отвечает"; exit 1; }
+
+            echo "=== Деплой завершён ==="
+            pm2 status phyton-crimea
+
+      # ── 3. Уведомление об успехе / ошибке ────────────────────────────────────
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Деплой прошёл успешно!"
+          echo "Коммит: ${{ github.sha }}"
+          echo "Автор:  ${{ github.actor }}"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Деплой завершился с ошибкой!"
+          echo "Коммит: ${{ github.sha }}"
