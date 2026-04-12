@@ -1,3 +1,4 @@
+"pages:build": "npx @cloudflare/next-on-pages"
 {
   "name": "phyton-crimea",
   "version": "0.1.0",
