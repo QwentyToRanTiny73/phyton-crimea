@@ -1,5 +1,5 @@
-'use client';
-
+// Zustand-стор корзины. Импортируйте только из client-компонентов
+// (используйте хук useCartStore внутри компонентов с директивой 'use client').
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CartItem, Product } from '@/types';

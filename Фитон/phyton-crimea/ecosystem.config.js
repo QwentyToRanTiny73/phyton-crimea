@@ -1,10 +1,10 @@
 // PM2 Ecosystem Config — Фитон Крым
 // Документация: https://pm2.keymetrics.io/docs/usage/application-declaration/
 //
-// Запуск:   pm2 start ecosystem.config.js
+// Запуск:    pm2 start ecosystem.config.js
 // Перезапуск: pm2 reload phyton-crimea
-// Статус:   pm2 status
-// Логи:     pm2 logs phyton-crimea
+// Статус:    pm2 status
+// Логи:      pm2 logs phyton-crimea
 
 module.exports = {
   apps: [
@@ -18,9 +18,12 @@ module.exports = {
       // Рабочая директория на сервере (измените под свой путь)
       cwd: '/var/www/phytoncrimea/Фитон/phyton-crimea',
 
-      // Cluster mode — по одному процессу на CPU-ядро (или задайте число)
-      instances: 'max',
-      exec_mode: 'cluster',
+      // ВАЖНО: используем fork (1 процесс), а не cluster.
+      // Причина: хранилище заказов (.orders/orders.json) — файловое,
+      // и при cluster mode возможны race conditions при одновременных заказах.
+      // Для cluster mode необходимо перейти на PostgreSQL + Prisma.
+      instances: 1,
+      exec_mode: 'fork',
 
       // Перезапуск при утечке памяти
       max_memory_restart: '512M',
@@ -33,7 +36,7 @@ module.exports = {
 
       // Файлы логов
       error_file: '/var/log/pm2/phyton-crimea-error.log',
-      out_file: '/var/log/pm2/phyton-crimea-out.log',
+      out_file:   '/var/log/pm2/phyton-crimea-out.log',
       merge_logs: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss',
 
@@ -47,7 +50,6 @@ module.exports = {
       listen_timeout: 10000,
       kill_timeout: 5000,
 
-      // Игнорируем изменения в этих папках (watchers не нужны в prod)
       watch: false,
     },
   ],

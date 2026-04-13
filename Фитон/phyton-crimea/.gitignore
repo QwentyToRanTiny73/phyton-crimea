@@ -26,6 +26,9 @@ yarn-error.log*
 .env*.local
 .env
 
+# Файловое хранилище заказов (создаётся автоматически на сервере)
+.orders/
+
 # Vercel
 .vercel
 

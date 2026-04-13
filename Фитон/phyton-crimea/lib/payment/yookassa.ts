@@ -43,7 +43,9 @@ function getAuthHeader(): string {
   if (!shopId || !secretKey) {
     throw new Error('YooKassa credentials not configured');
   }
-  return 'Basic ' + Buffer.from(`${shopId}:${secretKey}`).toString('base64');
+  // btoa() совместим с Node.js 16+, Edge Runtime и Cloudflare Workers
+  // (в отличие от Buffer.from(), который доступен только в Node.js)
+  return 'Basic ' + btoa(`${shopId}:${secretKey}`);
 }
 
 function generateIdempotenceKey(): string {

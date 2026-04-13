@@ -8,10 +8,6 @@ const nextConfig = {
       },
     ],
   },
-  // Разрешить кириллические символы в путях
-  experimental: {
-    typedRoutes: false,
-  },
 };
 
 export default nextConfig;
