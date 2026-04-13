@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { CreditCard, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { ShoppingBag, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, generateOrderId } from '@/lib/utils';
 import type { CheckoutFormData } from '@/types';
 
 const initialForm: CheckoutFormData = {
@@ -25,7 +25,6 @@ export default function CheckoutPage() {
   const { items, total, clearCart } = useCartStore();
   const [form, setForm] = useState<CheckoutFormData>(initialForm);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (items.length === 0) {
@@ -41,50 +40,13 @@ export default function CheckoutPage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
-    try {
-      // 1. Create order
-      const orderRes = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items,
-          total: total(),
-          customer: form,
-        }),
-      });
-
-      if (!orderRes.ok) throw new Error('Ошибка создания заказа');
-      const { orderId } = await orderRes.json();
-
-      // 2. Create YooKassa payment
-      const paymentRes = await fetch('/api/payment/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderId,
-          amount: total(),
-          email: form.email,
-          phone: form.phone,
-          returnUrl: `${window.location.origin}/order/success?orderId=${orderId}`,
-        }),
-      });
-
-      if (!paymentRes.ok) throw new Error('Ошибка инициализации оплаты');
-      const { paymentUrl } = await paymentRes.json();
-
-      clearCart();
-
-      // 3. Redirect to YooKassa payment page
-      window.location.href = paymentUrl;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка. Попробуйте ещё раз.');
-      setLoading(false);
-    }
+    const orderId = generateOrderId();
+    clearCart();
+    router.push(`/order/success?orderId=${orderId}`);
   }
 
   const Field = ({
@@ -199,24 +161,18 @@ export default function CheckoutPage() {
               />
             </div>
 
-            {/* Payment notice */}
+            {/* Demo notice */}
             <div className="bg-brand-beige rounded-2xl p-5 flex items-start gap-4">
               <ShieldCheck className="w-8 h-8 text-brand-green shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-gray-800 text-sm">
-                  Безопасная оплата через ЮКассу
+                  Демо-режим
                 </p>
                 <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                  Принимаем карты Мир, Visa, Mastercard, СБП и другие способы
-                  оплаты. Платёжные данные защищены шифрованием. После нажатия
-                  кнопки вы будете перенаправлены на страницу оплаты.
+                  Это демонстрационная версия сайта. Оплата и реальная обработка
+                  заказов временно недоступны. После нажатия кнопки вы увидите
+                  страницу подтверждения заказа.
                 </p>
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="text-xs bg-white border border-gray-200 rounded px-2 py-0.5 font-medium">МИР</span>
-                  <span className="text-xs bg-white border border-gray-200 rounded px-2 py-0.5 font-medium">VISA</span>
-                  <span className="text-xs bg-white border border-gray-200 rounded px-2 py-0.5 font-medium">MC</span>
-                  <span className="text-xs bg-white border border-gray-200 rounded px-2 py-0.5 font-medium">СБП</span>
-                </div>
               </div>
             </div>
           </div>
@@ -244,7 +200,7 @@ export default function CheckoutPage() {
                       <p className="text-xs font-medium text-gray-700 line-clamp-1">
                         {product.name}
                       </p>
-                      <p className="text-xs text-gray-400">× {quantity}</p>
+                      <p className="text-xs text-gray-400">&times; {quantity}</p>
                     </div>
                     <span className="text-sm font-semibold text-gray-700 shrink-0">
                       {formatPrice(product.price * quantity)}
@@ -255,30 +211,24 @@ export default function CheckoutPage() {
 
               <div className="border-t border-brand-beige-dark pt-4 mb-6">
                 <div className="flex justify-between">
-                  <span className="font-semibold text-gray-700">К оплате:</span>
+                  <span className="font-semibold text-gray-700">Итого:</span>
                   <span className="font-serif font-bold text-2xl text-brand-green">
                     {formatPrice(total())}
                   </span>
                 </div>
               </div>
 
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3 mb-4">
-                  {error}
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={loading}
                 className="flex items-center justify-center gap-2 w-full bg-brand-green text-white font-semibold py-4 rounded-full hover:bg-brand-green-dark transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <CreditCard className="w-5 h-5" />
-                {loading ? 'Обработка...' : 'Оплатить'}
+                <ShoppingBag className="w-5 h-5" />
+                {loading ? 'Оформление...' : 'Оформить заказ'}
               </button>
 
               <p className="text-xs text-gray-400 text-center mt-3">
-                Нажимая «Оплатить», вы соглашаетесь с условиями продажи
+                Нажимая «Оформить заказ», вы соглашаетесь с условиями продажи
               </p>
             </div>
           </div>

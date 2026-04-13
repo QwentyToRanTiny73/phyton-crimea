@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # ── Настройки (при необходимости измените) ────────────────────────────────────
-APP_DIR="/var/www/phytoncrimea/repo/Фитон/phyton-crimea"
+APP_DIR="/var/www/phytoncrimea/repo"
 PM2_APP_NAME="phyton-crimea"
 BRANCH="${1:-main}"
 SKIP_PULL="${2:-}"

@@ -3,11 +3,16 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { getProductBySlug, getProductsByCategory } from '@/lib/data/products';
+import { products, getProductBySlug, getProductsByCategory } from '@/lib/data/products';
 import { getCategoryBySlug } from '@/lib/data/categories';
 import { formatPrice } from '@/lib/utils';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
+
+// Генерирует все страницы товаров при статическом экспорте
+export function generateStaticParams() {
+  return products.map((p) => ({ slug: p.slug }));
+}
 
 interface Props {
   params: { slug: string };

@@ -1,12 +1,13 @@
+'use client';
+
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, Package, ArrowRight } from 'lucide-react';
 
-interface Props {
-  searchParams: { orderId?: string };
-}
-
-export default function OrderSuccessPage({ searchParams }: Props) {
-  const orderId = searchParams.orderId ?? 'неизвестен';
+function OrderDetails() {
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('orderId') ?? 'неизвестен';
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-24 text-center">
@@ -17,12 +18,12 @@ export default function OrderSuccessPage({ searchParams }: Props) {
       </div>
 
       <h1 className="font-serif text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-        Заказ оплачен!
+        Заказ оформлен!
       </h1>
 
       <p className="text-gray-500 text-lg leading-relaxed mb-6">
-        Спасибо за покупку! Ваш заказ успешно оформлен и оплачен.
-        Мы отправим вам письмо с подтверждением на указанный email.
+        Спасибо за интерес к нашей продукции! Ваш заказ зарегистрирован.
+        В полноценной версии сайта здесь будет подтверждение оплаты и отслеживание доставки.
       </p>
 
       <div className="bg-brand-beige rounded-2xl p-6 mb-8 inline-block text-left w-full">
@@ -37,7 +38,7 @@ export default function OrderSuccessPage({ searchParams }: Props) {
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Статус:</span>
-            <span className="font-medium text-green-600">Оплачен</span>
+            <span className="font-medium text-amber-600">Демо-режим</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Доставка:</span>
@@ -47,7 +48,7 @@ export default function OrderSuccessPage({ searchParams }: Props) {
       </div>
 
       <p className="text-sm text-gray-400 mb-8">
-        Срок обработки: 1–2 рабочих дня. Срок доставки зависит от вашего региона.
+        Это демонстрационная версия. В рабочей версии заказ будет обработан и отправлен.
       </p>
 
       <div className="flex flex-wrap justify-center gap-4">
@@ -66,5 +67,19 @@ export default function OrderSuccessPage({ searchParams }: Props) {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+          <p className="text-gray-400">Загрузка...</p>
+        </div>
+      }
+    >
+      <OrderDetails />
+    </Suspense>
   );
 }

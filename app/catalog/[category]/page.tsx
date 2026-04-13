@@ -2,8 +2,13 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { CategoryNav } from '@/components/products/CategoryNav';
-import { getCategoryBySlug } from '@/lib/data/categories';
+import { categories, getCategoryBySlug } from '@/lib/data/categories';
 import { getProductsByCategory } from '@/lib/data/products';
+
+// Генерирует все страницы категорий при статическом экспорте
+export function generateStaticParams() {
+  return categories.map((cat) => ({ category: cat.slug }));
+}
 
 interface Props {
   params: { category: string };

@@ -16,7 +16,7 @@ module.exports = {
       args: 'start',
 
       // Рабочая директория на сервере (измените под свой путь)
-      cwd: '/var/www/phytoncrimea/Фитон/phyton-crimea',
+      cwd: '/var/www/phytoncrimea/repo',
 
       // ВАЖНО: используем fork (1 процесс), а не cluster.
       // Причина: хранилище заказов (.orders/orders.json) — файловое,
