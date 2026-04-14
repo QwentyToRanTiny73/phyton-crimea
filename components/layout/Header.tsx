@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShoppingCart, Menu, X, Leaf } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCartStore } from '@/lib/store/cart';
 import { cn } from '@/lib/utils';
 
@@ -18,6 +18,10 @@ export function Header() {
   const cartCount = useCartStore((s) => s.count());
   const openCart = useCartStore((s) => s.openCart);
   const [mobileOpen, setMobileOpen] = useState(false);
+  // Prevent SSR/client hydration mismatch: Zustand persist reads localStorage
+  // only on the client, so cart count must not render until after mount.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-brand-beige-dark shadow-sm">
@@ -58,7 +62,7 @@ export function Header() {
               aria-label="Корзина"
             >
               <ShoppingCart className="w-6 h-6" />
-              {cartCount > 0 && (
+              {mounted && cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-brand-green text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
