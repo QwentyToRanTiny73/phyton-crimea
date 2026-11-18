@@ -1,0 +1,177 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/home/Hero.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import CategoryCard from '@/components/cards/CategoryCard.astro';
+import ListingCard from '@/components/cards/ListingCard.astro';
+import EventCard from '@/components/cards/EventCard.astro';
+import GuideCard from '@/components/cards/GuideCard.astro';
+import SettlementCard from '@/components/cards/SettlementCard.astro';
+import { countByCategory, getCatalog, listingsInSettlement, upcomingEvents } from '@/lib/catalog';
+import { isoDate } from '@/lib/format';
+import { websiteSchema } from '@/lib/seo';
+import { absoluteUrl, routes } from '@/lib/url';
+import { SITE } from '@/data/site';
+
+const catalog = await getCatalog();
+const hero = catalog.photos.find((p) => p.id === SITE.heroPhoto);
+if (!hero) throw new Error(`Нет фото первого экрана «${SITE.heroPhoto}»`);
+
+const counts = countByCategory(catalog);
+const popular = catalog.listings.filter((l) => l.kind === 'place' && l.featured && !l.demo).slice(0, 8);
+const recommended = catalog.listings.filter((l) => l.kind !== 'place' && l.featured).slice(0, 4);
+const recent = [...catalog.listings]
+  .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime() || a.title.localeCompare(b.title, 'ru'))
+  .slice(0, 4);
+// Ближайшие на момент сборки; в браузере дополнительно скрываются прошедшие.
+const events = upcomingEvents(catalog, new Date()).slice(0, 6);
+const guides = catalog.guides.slice(0, 4);
+
+const site = Astro.site;
+---
+
+<BaseLayout
+  title={SITE.name}
+  description={SITE.description}
+  overlayHeader
+  jsonLd={[websiteSchema(absoluteUrl(routes.home(), site), absoluteUrl(routes.catalog(), site))]}
+>
+  <Hero
+    photo={hero}
+    categories={catalog.categories}
+    stats={{ listings: catalog.listings.length, settlements: catalog.settlements.length, events: catalog.events.length }}
+  />
+
+  <section class="container-page py-16 sm:py-20" aria-labelledby="home-categories">
+    <SectionHeading
+      id="home-categories"
+      eyebrow="Категории"
+      title="С чего начать"
+      description="Десять разделов справочника — от жилья и гастрономии до мастеров и событий."
+      link={{ href: routes.categories(), label: 'Все категории' }}
+    />
+    <ul class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
+      {catalog.categories.map((c) => <li><CategoryCard category={c} count={counts.get(c.id)} compact /></li>)}
+    </ul>
+  </section>
+
+  <section class="bg-sand-50 py-16 sm:py-20" aria-labelledby="home-popular">
+    <div class="container-page">
+      <SectionHeading
+        id="home-popular"
+        eyebrow="Популярные места"
+        title="Символы Южного берега"
+        description="Дворцы, вершины и тропы, ради которых едут в Большую Ялту."
+        link={{ href: routes.catalog({ kind: 'place' }), label: 'Все места' }}
+      />
+      <ul class="mt-8 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+        {popular.map((l) => <li class="w-[78%] shrink-0 snap-start sm:w-auto"><ListingCard listing={l} sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 78vw" /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="container-page py-16 sm:py-20" aria-labelledby="home-events" data-home-events>
+    <SectionHeading
+      id="home-events"
+      eyebrow="Афиша"
+      title="Ближайшие события"
+      description="Концерты, фестивали, выставки и мастер-классы Большой Ялты."
+      link={{ href: routes.events(), label: 'Вся афиша' }}
+    />
+    <ul class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {
+        events.map((e) => (
+          <li data-event data-start={isoDate(e.startDate)} data-end={isoDate(e.endDate ?? e.startDate)}>
+            <EventCard event={e} />
+          </li>
+        ))
+      }
+    </ul>
+    <p data-empty hidden={events.length > 0} class="mt-8 rounded-card border border-dashed border-line p-8 text-center text-muted">
+      Ближайших событий пока нет. <a href={routes.events({ period: 'all' })} class="link">Смотреть всю афишу</a>
+    </p>
+  </section>
+
+  <section class="bg-olive-soft/50 py-16 sm:py-20" aria-labelledby="home-guides">
+    <div class="container-page">
+      <SectionHeading
+        id="home-guides"
+        eyebrow="Подборки и маршруты"
+        title="Готовые идеи на день"
+        description="Тематические маршруты по дворцам, тропам и литературным местам."
+        link={{ href: routes.guides(), label: 'Все подборки' }}
+      />
+      <ul class="mt-8 grid gap-5 lg:grid-cols-2">
+        {guides.map((g) => <li><GuideCard guide={g} /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  {
+    recommended.length > 0 && (
+      <section class="container-page py-16 sm:py-20" aria-labelledby="home-recommended">
+        <SectionHeading
+          id="home-recommended"
+          eyebrow="Организации и услуги"
+          title="Рекомендуем"
+          description="Гиды, мастерские, морские клубы и сервисы. Сейчас здесь демо-записи — они показывают, как будут выглядеть карточки партнёров."
+          link={{ href: routes.catalog({ kind: 'organization' }), label: 'Все организации' }}
+        />
+        <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {recommended.map((l) => <li><ListingCard listing={l} sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" /></li>)}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="bg-sand-50 py-16 sm:py-20" aria-labelledby="home-geo">
+    <div class="container-page">
+      <SectionHeading
+        id="home-geo"
+        eyebrow="География"
+        title="Направления Большой Ялты"
+        description="Одиннадцать городов и посёлков — у каждого своя страница с местами, услугами и событиями."
+        link={{ href: routes.geography(), label: 'Вся география' }}
+      />
+      <ul class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+        {
+          catalog.settlements.slice(0, 8).map((s) => (
+            <li>
+              <SettlementCard settlement={s} count={listingsInSettlement(catalog, s.id).length} sizes="(min-width: 1024px) 300px, (min-width: 768px) 33vw, 50vw" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="container-page py-16 sm:py-20" aria-labelledby="home-recent">
+    <SectionHeading
+      id="home-recent"
+      eyebrow="Новое в каталоге"
+      title="Недавно добавленные"
+      link={{ href: routes.catalog({ sort: 'new' }), label: 'Смотреть по дате' }}
+    />
+    <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {recent.map((l) => <li><ListingCard listing={l} sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" /></li>)}
+    </ul>
+  </section>
+
+  <section class="container-page" aria-labelledby="home-cta">
+    <div class="relative overflow-hidden rounded-[2rem] bg-sea px-6 py-12 text-white sm:px-12 sm:py-16">
+      <div class="max-w-2xl">
+        <h2 id="home-cta" class="text-3xl text-white sm:text-4xl">Знаете место, которого здесь нет?</h2>
+        <p class="mt-4 text-white/85">
+          Предложите достопримечательность, кафе, мастерскую, гида или событие. Редакция проверит данные и добавит запись в каталог.
+        </p>
+        <a href={routes.suggest()} class="btn mt-8 bg-white text-sea-dark hover:bg-sand-50">Предложить объект</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { hidePast } from '@/scripts/events';
+  const box = document.querySelector<HTMLElement>('[data-home-events]');
+  if (box) hidePast(box);
+</script>

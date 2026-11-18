@@ -1,0 +1,22 @@
+---
+import Breadcrumbs from './Breadcrumbs.astro';
+import type { Crumb } from '@/lib/seo';
+
+interface Props {
+  title: string;
+  eyebrow?: string | undefined;
+  intro?: string | undefined;
+  breadcrumbs: Crumb[];
+}
+const { title, eyebrow, intro, breadcrumbs } = Astro.props;
+---
+
+<header class="border-b border-line/70 bg-sand-50">
+  <div class="container-page py-10 sm:py-14">
+    <Breadcrumbs items={breadcrumbs} />
+    {eyebrow && <p class="eyebrow mt-6">{eyebrow}</p>}
+    <h1 class:list={['max-w-4xl text-4xl leading-tight sm:text-5xl', eyebrow ? 'mt-2' : 'mt-6']}>{title}</h1>
+    {intro && <p class="mt-4 max-w-3xl text-base leading-relaxed text-muted sm:text-lg">{intro}</p>}
+    <slot />
+  </div>
+</header>

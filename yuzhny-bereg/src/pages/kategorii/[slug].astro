@@ -1,0 +1,124 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/layout/PageHeader.astro';
+import ListingCard from '@/components/cards/ListingCard.astro';
+import EventCard from '@/components/cards/EventCard.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import EmptyState from '@/components/ui/EmptyState.astro';
+import { getCatalog, listingsInCategory } from '@/lib/catalog';
+import { countLabel, truncate } from '@/lib/format';
+import { ICONS } from '@/lib/icons';
+import { TONE } from '@/lib/tone';
+import { routes } from '@/lib/url';
+
+export const getStaticPaths = (async () => {
+  const catalog = await getCatalog();
+  return catalog.categories.map((c) => ({ params: { slug: c.slug } }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const catalog = await getCatalog();
+const category = catalog.categoryById.get(slug);
+if (!category) throw new Error(`Нет категории ${slug}`);
+
+const isEvents = category.section === 'events';
+const listings = isEvents ? [] : listingsInCategory(catalog, category.id).sort((a, b) => Number(b.featured) - Number(a.featured) || Number(a.demo) - Number(b.demo) || a.title.localeCompare(b.title, 'ru'));
+const types = catalog.serviceTypes.filter((t) => t.category.id === category.id);
+const typeCounts = new Map(types.map((t) => [t.id, listings.filter((l) => l.serviceTypes.some((x) => x.id === t.id)).length]));
+const settlements = catalog.settlements
+  .map((s) => ({ s, n: listings.filter((l) => l.settlement.id === s.id).length }))
+  .filter((x) => x.n > 0);
+const Icon = ICONS[category.icon];
+const tone = TONE[category.tone];
+
+const crumbs = [
+  { label: 'Главная', href: routes.home() },
+  { label: 'Категории', href: routes.categories() },
+  { label: category.title, href: routes.category(category.slug) },
+];
+---
+
+<BaseLayout title={`${category.title} — Большая Ялта`} description={truncate(category.intro)} breadcrumbs={crumbs}>
+  <PageHeader breadcrumbs={crumbs} title={category.title} intro={category.intro}>
+    <div class="mt-6 flex flex-wrap items-center gap-3">
+      <span class:list={['inline-flex size-11 items-center justify-center rounded-2xl', tone.surface, tone.ink]}>
+        <Icon size={22} aria-hidden="true" />
+      </span>
+      <span class="text-sm font-semibold text-graphite-soft">
+        {isEvents ? countLabel(catalog.events.length, ['событие', 'события', 'событий']) : countLabel(listings.length, ['объект', 'объекта', 'объектов'])}
+      </span>
+      <a href={isEvents ? routes.events() : routes.catalog({ category: category.id })} class="btn-secondary ml-auto">
+        {isEvents ? 'Открыть афишу с фильтрами' : 'Открыть в каталоге с фильтрами'}
+      </a>
+    </div>
+  </PageHeader>
+
+  <div class="container-page py-10">
+    {
+      !isEvents && (types.length > 0 || settlements.length > 0) && (
+        <div class="mb-10 grid gap-6 lg:grid-cols-2">
+          {types.length > 0 && (
+            <nav aria-label="Типы услуг">
+              <h2 class="eyebrow font-sans">Типы</h2>
+              <ul class="mt-3 flex flex-wrap gap-2">
+                {types.map((t) => (
+                  <li>
+                    <a href={routes.catalog({ category: category.id, type: t.id })} class="chip">
+                      {t.title}
+                      <span class="text-xs text-muted">{typeCounts.get(t.id)}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+          {settlements.length > 0 && (
+            <nav aria-label="Населённые пункты">
+              <h2 class="eyebrow font-sans">Где</h2>
+              <ul class="mt-3 flex flex-wrap gap-2">
+                {settlements.map(({ s, n }) => (
+                  <li>
+                    <a href={routes.catalog({ category: category.id, settlement: s.id })} class="chip">
+                      {s.title}
+                      <span class="text-xs text-muted">{n}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+        </div>
+      )
+    }
+
+    {
+      isEvents ? (
+        <>
+          <SectionHeading title="Все события" link={{ href: routes.events(), label: 'Фильтры по дате и категории' }} />
+          <ul class="mt-6 grid gap-4 lg:grid-cols-2">
+            {catalog.events.map((e) => (
+              <li>
+                <EventCard event={e} />
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : listings.length > 0 ? (
+        <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {listings.map((l) => (
+            <li>
+              <ListingCard listing={l} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <EmptyState title="В этой категории пока пусто" text="Каталог только наполняется. Предложите место или организацию — мы проверим и добавим.">
+          <a href={routes.suggest()} class="btn-primary mt-5">
+            Предложить объект
+          </a>
+        </EmptyState>
+      )
+    }
+  </div>
+</BaseLayout>

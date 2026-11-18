@@ -1,0 +1,93 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import { Clock, Route } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import PhotoCredit from '@/components/ui/PhotoCredit.astro';
+import { getCatalog, renderBody } from '@/lib/catalog';
+import { countLabel, truncate } from '@/lib/format';
+import { routes } from '@/lib/url';
+
+export const getStaticPaths = (async () => {
+  const catalog = await getCatalog();
+  return catalog.guides.map((g) => ({ params: { slug: g.slug } }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const catalog = await getCatalog();
+const guide = catalog.guides.find((g) => g.slug === slug);
+if (!guide) throw new Error(`Нет подборки ${slug}`);
+const { Content } = await renderBody('guide', guide.id);
+const items = guide.itemIds.map((id) => catalog.listingById.get(id)).filter((l) => l !== undefined);
+
+const crumbs = [
+  { label: 'Главная', href: routes.home() },
+  { label: 'Подборки', href: routes.guides() },
+  { label: guide.title, href: routes.guide(guide.slug) },
+];
+---
+
+<BaseLayout title={guide.title} description={truncate(guide.summary)} image={guide.cover} ogType="article" breadcrumbs={crumbs}>
+  <article>
+    <header class="container-page pt-8 sm:pt-10">
+      <Breadcrumbs items={crumbs} />
+      <p class="eyebrow mt-6 flex items-center gap-1.5"><Route size={14} aria-hidden="true" />Подборка · {countLabel(items.length, ['место', 'места', 'мест'])}</p>
+      <h1 class="mt-2 max-w-4xl text-4xl leading-tight sm:text-5xl">{guide.title}</h1>
+      <p class="mt-4 max-w-3xl text-lg leading-relaxed text-muted">{guide.summary}</p>
+      {
+        (guide.format || guide.duration) && (
+          <p class="mt-4 inline-flex items-center gap-2 rounded-full bg-olive-soft px-4 py-1.5 text-sm text-olive-dark">
+            <Clock size={15} aria-hidden="true" />
+            {[guide.format, guide.duration].filter(Boolean).join(' · ')}
+          </p>
+        )
+      }
+    </header>
+
+    <figure class="container-page mt-8">
+      <Image
+        src={guide.cover.src}
+        alt={guide.cover.alt}
+        widths={[640, 960, 1280, 1600]}
+        sizes="(min-width: 1280px) 1216px, 100vw"
+        priority
+        class="aspect-[21/9] w-full rounded-card object-cover"
+      />
+      <figcaption class="mt-2"><PhotoCredit photo={guide.cover} /></figcaption>
+    </figure>
+
+    <div class="container-page mt-10 grid gap-12 lg:grid-cols-12">
+      <div class="prose-text lg:col-span-7">
+        <Content />
+      </div>
+      <aside class="lg:col-span-5">
+        <h2 class="font-sans text-sm font-semibold text-graphite">Маршрут</h2>
+        <ol class="relative mt-5 space-y-5 border-l border-line pl-6">
+          {
+            items.map((l, i) => {
+              const photo = l.photos[0];
+              return (
+                <li class="relative">
+                  <span class="absolute top-0 -left-[2.15rem] flex size-7 items-center justify-center rounded-full bg-graphite text-xs font-semibold text-milk">
+                    {i + 1}
+                  </span>
+                  <a href={routes.listing(l.slug)} class="group flex gap-4">
+                    {photo && (
+                      <Image src={photo.src} alt="" widths={[160, 240]} sizes="96px" class="size-20 shrink-0 rounded-xl object-cover sm:size-24" />
+                    )}
+                    <span>
+                      <span class="block font-serif text-lg leading-snug text-graphite group-hover:underline">{l.title}</span>
+                      <span class="mt-1 block text-xs text-muted">{l.settlement.title} · {l.category.shortTitle}</span>
+                      <span class="mt-1.5 line-clamp-2 block text-sm text-muted">{l.summary}</span>
+                    </span>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ol>
+      </aside>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,45 @@
+---
+import { MapPinned, Navigation } from '@lucide/astro';
+import type { Coordinates } from '@/types/domain';
+import { formatCoordinates, osmEmbed, osmLink, yandexMapsLink } from '@/lib/geo';
+
+interface Props {
+  coordinates: Coordinates;
+  title: string;
+}
+const { coordinates: c, title } = Astro.props;
+---
+
+<section aria-labelledby="map-heading" class="rounded-card border border-line/70 bg-white/70 p-5">
+  <h2 id="map-heading" class="font-sans text-sm font-semibold text-graphite">На карте</h2>
+  <p class="mt-1 text-sm text-muted">
+    {formatCoordinates(c)}
+    {c.source && <span class="text-xs"> · координаты: {c.source}</span>}
+  </p>
+  <div data-map-embed data-src={osmEmbed(c)} data-title={`${title} на карте OpenStreetMap`} class="mt-4">
+    <button type="button" class="flex aspect-[16/9] w-full flex-col items-center justify-center gap-2 rounded-xl bg-sea-soft text-sea-dark transition-colors hover:bg-sea-soft/70">
+      <MapPinned size={28} aria-hidden="true" />
+      <span class="text-sm font-semibold">Показать карту</span>
+      <span class="text-xs opacity-80">Загрузится OpenStreetMap</span>
+    </button>
+  </div>
+  <div class="mt-4 flex flex-wrap gap-2">
+    <a href={osmLink(c)} target="_blank" rel="noopener" class="chip"><Navigation size={14} aria-hidden="true" />OpenStreetMap</a>
+    <a href={yandexMapsLink(c)} target="_blank" rel="noopener" class="chip"><Navigation size={14} aria-hidden="true" />Яндекс Карты</a>
+  </div>
+</section>
+
+<script>
+  // Карта грузится только по клику: без сторонних запросов и тяжёлых библиотек при открытии страницы.
+  document.querySelectorAll<HTMLElement>('[data-map-embed]').forEach((box) => {
+    box.querySelector('button')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = box.dataset.src ?? '';
+      iframe.title = box.dataset.title ?? 'Карта';
+      iframe.loading = 'lazy';
+      iframe.referrerPolicy = 'no-referrer-when-downgrade';
+      iframe.className = 'aspect-[16/9] w-full rounded-xl border-0';
+      box.replaceChildren(iframe);
+    });
+  });
+</script>

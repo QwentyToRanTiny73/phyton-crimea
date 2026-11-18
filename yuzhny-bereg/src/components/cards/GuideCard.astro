@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import { Route } from '@lucide/astro';
+import type { Guide } from '@/types/domain';
+import { countLabel } from '@/lib/format';
+import { routes } from '@/lib/url';
+
+interface Props {
+  guide: Guide;
+  sizes?: string;
+}
+const { guide: g, sizes = '(min-width: 1024px) 600px, 100vw' } = Astro.props;
+---
+
+<article class="group relative grid h-full overflow-hidden rounded-card bg-white shadow-card transition-shadow duration-300 hover:shadow-lift sm:grid-cols-5">
+  <div class="relative aspect-[16/10] overflow-hidden sm:col-span-2 sm:aspect-auto">
+    <Image
+      src={g.cover.src}
+      alt={g.cover.alt}
+      widths={[400, 640, 800]}
+      sizes={sizes}
+      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+    />
+  </div>
+  <div class="flex flex-col p-5 sm:col-span-3 sm:p-6">
+    <p class="flex items-center gap-1.5 text-xs font-semibold text-olive-dark">
+      <Route size={14} aria-hidden="true" />
+      Подборка · {countLabel(g.itemIds.length, ['место', 'места', 'мест'])}
+    </p>
+    <h3 class="mt-2 font-serif text-xl leading-snug sm:text-2xl">
+      <a href={routes.guide(g.slug)} class="card-link focus-visible:outline-none">{g.title}</a>
+    </h3>
+    <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-muted">{g.summary}</p>
+    {(g.duration || g.format) && <p class="mt-auto pt-4 text-xs text-graphite-soft">{[g.format, g.duration].filter(Boolean).join(' · ')}</p>}
+  </div>
+</article>

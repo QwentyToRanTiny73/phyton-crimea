@@ -1,0 +1,154 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/manrope';
+@import '@fontsource-variable/lora';
+
+/*
+ * Дизайн-токены «Южного берега».
+ * Палитра: молочный и песочный фон, графитовый текст, оливковый, морской и терракотовый акценты.
+ */
+@theme {
+  --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Lora Variable', ui-serif, Georgia, 'Times New Roman', serif;
+
+  --color-milk: #f8f4ec;
+  --color-sand-50: #f3ecdf;
+  --color-sand-100: #ece2cf;
+  --color-sand-200: #dfd0b4;
+  --color-sand-300: #c9b48f;
+
+  --color-graphite: #22262a;
+  --color-graphite-soft: #3d4248;
+  --color-muted: #5f6260;
+  --color-line: #ddd3c1;
+
+  --color-olive: #5b6a2e;
+  --color-olive-dark: #47531f;
+  --color-olive-soft: #e3e6cf;
+
+  --color-sea: #1d5a78;
+  --color-sea-dark: #15435a;
+  --color-sea-soft: #d6e5ec;
+
+  --color-terracotta: #a5512e;
+  --color-terracotta-dark: #873f22;
+  --color-terracotta-soft: #f1dccf;
+
+  --radius-card: 1.25rem;
+  --shadow-card: 0 1px 2px rgb(34 38 42 / 0.06), 0 8px 24px -12px rgb(34 38 42 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(34 38 42 / 0.06), 0 18px 40px -16px rgb(34 38 42 / 0.28);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-milk font-sans text-graphite antialiased;
+    font-feature-settings: 'kern', 'liga';
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-serif text-graphite;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    /* Длинные русские слова («достопримечательности») не должны распирать экран телефона. */
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    @apply bg-sand-200 text-graphite;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-sea;
+  }
+  [hidden] {
+    display: none !important;
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+@utility eyebrow {
+  @apply text-xs font-semibold tracking-[0.14em] text-muted uppercase;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors duration-200;
+}
+@utility btn-primary {
+  @apply btn bg-graphite text-milk hover:bg-graphite-soft;
+}
+@utility btn-secondary {
+  @apply btn border border-graphite/20 bg-transparent text-graphite hover:border-graphite/40 hover:bg-sand-50;
+}
+@utility btn-accent {
+  @apply btn bg-terracotta text-white hover:bg-terracotta-dark;
+}
+@utility field {
+  @apply w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm text-graphite placeholder:text-muted focus:border-sea focus:outline-none;
+}
+@utility chip {
+  @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-white/70 px-3 py-1.5 text-sm text-graphite-soft transition-colors hover:border-graphite/30 hover:bg-white;
+}
+@utility chip-active {
+  @apply border-graphite bg-graphite text-milk hover:border-graphite hover:bg-graphite-soft;
+}
+@utility link {
+  @apply font-medium text-sea underline decoration-sea/30 underline-offset-4 transition-colors hover:decoration-sea;
+}
+
+/* Растягивает ссылку заголовка на всю карточку, сохраняя одну ссылку в DOM. */
+.card-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+/* Типографика длинных описаний (Markdown) — без плагинов, на токенах проекта. */
+.prose-text {
+  @apply text-[1.0625rem] leading-relaxed text-graphite-soft;
+}
+.prose-text > * + * {
+  margin-top: 1em;
+}
+.prose-text h2 {
+  @apply mt-10 text-2xl;
+}
+.prose-text h3 {
+  @apply mt-8 text-xl;
+}
+.prose-text a {
+  @apply link;
+}
+.prose-text ul {
+  @apply list-disc pl-5;
+}
+.prose-text ol {
+  @apply list-decimal pl-5;
+}
+.prose-text li + li {
+  margin-top: 0.35em;
+}
+.prose-text blockquote {
+  @apply border-l-2 border-olive pl-4 font-serif text-lg text-graphite italic;
+}
+.prose-text strong {
+  @apply font-semibold text-graphite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,148 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getImage } from 'astro:assets';
+import { MapPin } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import Gallery from '@/components/entity/Gallery.astro';
+import InfoPanel from '@/components/entity/InfoPanel.astro';
+import MapBlock from '@/components/entity/MapBlock.astro';
+import DemoNotice from '@/components/entity/DemoNotice.astro';
+import SourceNote from '@/components/entity/SourceNote.astro';
+import DemoBadge from '@/components/ui/DemoBadge.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import EventCard from '@/components/cards/EventCard.astro';
+import ListingCard from '@/components/cards/ListingCard.astro';
+import { getCatalog, renderBody } from '@/lib/catalog';
+import { formatDateRange, formatTimeRange, isoDate, truncate } from '@/lib/format';
+import { eventSchema } from '@/lib/seo';
+import { absoluteUrl, routes } from '@/lib/url';
+
+export const getStaticPaths = (async () => {
+  const catalog = await getCatalog();
+  return catalog.events.map((e) => ({ params: { slug: e.slug } }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const catalog = await getCatalog();
+const event = catalog.eventById.get(slug);
+if (!event) throw new Error(`Нет события ${slug}`);
+
+const { Content } = await renderBody('event', event.id);
+const venue = event.venueId ? catalog.listingById.get(event.venueId) : undefined;
+const organizer = event.organizerId ? catalog.listingById.get(event.organizerId) : undefined;
+const venueName = venue?.title ?? event.venueName ?? event.settlement.title;
+const coordinates = event.coordinates ?? venue?.coordinates;
+const time = formatTimeRange(event.startTime, event.endTime);
+
+const rows = [
+  { icon: 'date' as const, label: 'Дата', value: formatDateRange(event.startDate, event.endDate) },
+  ...(time ? [{ icon: 'time' as const, label: 'Время', value: time }] : []),
+  {
+    icon: 'address' as const,
+    label: 'Место',
+    value: [venueName, event.address].filter(Boolean).join(', '),
+    href: venue ? routes.listing(venue.slug) : routes.settlement(event.settlement.slug),
+  },
+  ...(organizer || event.organizerName
+    ? [{ icon: 'organizer' as const, label: 'Организатор', value: organizer?.title ?? event.organizerName ?? '', href: organizer ? routes.listing(organizer.slug) : undefined }]
+    : []),
+  ...(event.price ? [{ icon: 'price' as const, label: 'Стоимость', value: event.price }] : []),
+];
+
+const more = catalog.events.filter((e) => e.id !== event.id && (e.eventCategory.id === event.eventCategory.id || e.settlement.id === event.settlement.id)).slice(0, 4);
+
+const crumbs = [
+  { label: 'Главная', href: routes.home() },
+  { label: 'Афиша', href: routes.events() },
+  { label: event.title, href: routes.event(event.slug) },
+];
+const site = Astro.site;
+const cover = event.photos[0];
+const og = cover ? await getImage({ src: cover.src, width: 1200, height: 630, fit: 'cover', format: 'jpg' }) : undefined;
+const schema = eventSchema(event, absoluteUrl(routes.event(event.slug), site), venueName, og ? absoluteUrl(og.src, site) : undefined);
+---
+
+<BaseLayout
+  title={`${event.title} — ${formatDateRange(event.startDate, event.endDate)}, ${event.settlement.title}`}
+  description={truncate(event.summary)}
+  image={cover}
+  ogType="article"
+  noindex={event.demo}
+  breadcrumbs={crumbs}
+  jsonLd={[schema]}
+>
+  <article data-event data-start={isoDate(event.startDate)} data-end={isoDate(event.endDate ?? event.startDate)} data-event-page>
+    <header class="container-page pt-8 sm:pt-10">
+      <Breadcrumbs items={crumbs} />
+      <div class="mt-6 flex flex-wrap items-center gap-2">
+        <a href={routes.events({ category: event.eventCategory.id })} class="chip">{event.eventCategory.title}</a>
+        {event.demo && <DemoBadge />}
+        <span hidden data-past-badge class="rounded-full bg-sand-200 px-2.5 py-0.5 text-xs font-semibold text-graphite-soft">Событие прошло</span>
+      </div>
+      <h1 class="mt-4 max-w-4xl text-4xl leading-tight sm:text-5xl">{event.title}</h1>
+      <p class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
+        <span>{formatDateRange(event.startDate, event.endDate)}{time && `, ${time}`}</span>
+        <span class="inline-flex items-center gap-1.5">
+          <MapPin size={15} aria-hidden="true" />
+          <a href={routes.settlement(event.settlement.slug)} class="hover:text-graphite">{event.settlement.title}</a>
+        </span>
+      </p>
+    </header>
+
+    <div class="container-page mt-8 grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        {event.demo && <div class="mb-6"><DemoNotice kind="event" /></div>}
+        <Gallery photos={event.photos} category={event.category} />
+        <p class="mt-8 font-serif text-xl leading-relaxed text-graphite sm:text-2xl">{event.summary}</p>
+        <div class="prose-text mt-6">
+          <Content />
+        </div>
+      </div>
+      <aside class="space-y-4 lg:col-span-5">
+        <div class="space-y-4 lg:sticky lg:top-24">
+          <InfoPanel rows={rows} contacts={event.contacts} socials={event.socials} links={event.links} registrationUrl={event.registrationUrl} />
+          {coordinates && <MapBlock coordinates={coordinates} title={venueName} />}
+          <SourceNote verification={event.verification} updatedAt={event.updatedAt} />
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  {
+    (venue || organizer) && (
+      <section class="container-page mt-16" aria-labelledby="event-places">
+        <SectionHeading id="event-places" title="Площадка и организатор" />
+        <ul class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {[venue, organizer]
+            .filter((l, i, arr) => l !== undefined && arr.indexOf(l) === i)
+            .map((l) => (
+              <li>
+                <ListingCard listing={l!} sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" />
+              </li>
+            ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    more.length > 0 && (
+      <section class="container-page mt-16" aria-labelledby="more-events">
+        <SectionHeading id="more-events" title="Ещё в афише" link={{ href: routes.events(), label: 'Вся афиша' }} />
+        <ul class="mt-6 grid gap-4 lg:grid-cols-2">
+          {more.map((e) => (
+            <li>
+              <EventCard event={e} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<script>
+  import { markPast } from '@/scripts/events';
+  markPast(document);
+</script>

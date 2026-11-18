@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+import type { Settlement } from '@/types/domain';
+import { countLabel } from '@/lib/format';
+import { routes } from '@/lib/url';
+
+interface Props {
+  settlement: Settlement;
+  count?: number | undefined;
+  sizes?: string;
+}
+const { settlement: s, count, sizes = '(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw' } = Astro.props;
+---
+
+<article class="group relative aspect-[4/5] overflow-hidden rounded-card bg-sand-200 shadow-card sm:aspect-[3/4]">
+  <Image
+    src={s.photo.src}
+    alt=""
+    widths={[400, 640, 800]}
+    sizes={sizes}
+    class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+  />
+  <div class="absolute inset-0 bg-gradient-to-t from-graphite/85 via-graphite/25 to-transparent"></div>
+  <div class="absolute inset-x-0 bottom-0 p-5 text-white">
+    <h3 class="font-serif text-2xl text-white">
+      <a href={routes.settlement(s.slug)} class="card-link focus-visible:outline-none">{s.title}</a>
+    </h3>
+    <p class="mt-1.5 line-clamp-2 text-sm text-white/85">{s.summary}</p>
+    {count !== undefined && <p class="mt-2 text-xs font-semibold tracking-wide text-white/75 uppercase">{countLabel(count, ['объект', 'объекта', 'объектов'])}</p>}
+  </div>
+</article>

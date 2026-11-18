@@ -1,0 +1,83 @@
+# Сборка и публикация платформы «Южный берег» (каталог yuzhny-bereg/) на GitHub Pages.
+# Сайт «Фитон Крым» в корне репозитория этот workflow не затрагивает.
+#
+# Перед первым запуском: Settings → Pages → Build and deployment → Source: «GitHub Actions».
+# Адрес и base path берутся из настроек Pages автоматически (actions/configure-pages),
+# поэтому после подключения собственного домена менять workflow не нужно.
+
+name: Deploy «Южный берег» to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'yuzhny-bereg/**'
+      - '.github/workflows/deploy-yuzhny-bereg.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: yuzhny-bereg
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: yuzhny-bereg/.node-version
+          cache: npm
+          cache-dependency-path: yuzhny-bereg/package-lock.json
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+        env:
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          PUBLIC_SUGGEST_EMAIL: ${{ vars.SUGGEST_EMAIL }}
+          PUBLIC_SUGGEST_FORM_URL: ${{ vars.SUGGEST_FORM_URL }}
+
+      - name: Check internal links
+        run: node scripts/check-links.mjs
+        env:
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: yuzhny-bereg/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

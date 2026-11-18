@@ -1,0 +1,125 @@
+---
+/**
+ * Панель сведений об объекте или событии. Каждое поле необязательно: строки без данных не выводятся.
+ */
+import { CalendarDays, Clock, ExternalLink, Globe, Mail, MapPin, Phone, Ticket, User, Wallet } from '@lucide/astro';
+import type { Contacts, ExternalLink as Link, SocialLink } from '@/types/domain';
+import { hostname, phoneHref, SOCIAL_LABEL } from '@/lib/format';
+
+interface Row {
+  icon: 'date' | 'time' | 'address' | 'price' | 'organizer' | 'hours';
+  label: string;
+  value: string;
+  href?: string | undefined;
+}
+interface Props {
+  rows: Row[];
+  contacts?: Contacts | undefined;
+  socials?: SocialLink[] | undefined;
+  links?: Link[] | undefined;
+  registrationUrl?: string | undefined;
+}
+const { rows, contacts = {}, socials = [], links = [], registrationUrl } = Astro.props;
+const ICON = { date: CalendarDays, time: Clock, address: MapPin, price: Wallet, organizer: User, hours: Clock } as const;
+const hasContacts = Boolean(contacts.phone || contacts.email || contacts.website || socials.length);
+---
+
+<section aria-labelledby="info-heading" class="rounded-card bg-white p-5 shadow-card sm:p-6">
+  <h2 id="info-heading" class="font-sans text-sm font-semibold text-graphite">Сведения</h2>
+  <dl class="mt-4 space-y-4 text-sm">
+    {
+      rows.map((r) => {
+        const Icon = ICON[r.icon];
+        return (
+          <div class="flex gap-3">
+            <Icon size={18} class="mt-0.5 shrink-0 text-muted" aria-hidden="true" />
+            <div class="min-w-0">
+              <dt class="text-xs text-muted">{r.label}</dt>
+              <dd class="mt-0.5 text-graphite">
+                {r.href ? (
+                  <a href={r.href} class="link">
+                    {r.value}
+                  </a>
+                ) : (
+                  r.value
+                )}
+              </dd>
+            </div>
+          </div>
+        );
+      })
+    }
+  </dl>
+
+  {
+    hasContacts && (
+      <div class="mt-6 border-t border-line pt-5">
+        <h3 class="font-sans text-sm font-semibold text-graphite">Контакты</h3>
+        <ul class="mt-3 space-y-2.5 text-sm">
+          {contacts.phone && (
+            <li class="flex items-center gap-3">
+              <Phone size={18} class="shrink-0 text-muted" aria-hidden="true" />
+              <a href={phoneHref(contacts.phone)} class="link">
+                {contacts.phone}
+              </a>
+            </li>
+          )}
+          {contacts.email && (
+            <li class="flex items-center gap-3">
+              <Mail size={18} class="shrink-0 text-muted" aria-hidden="true" />
+              <a href={`mailto:${contacts.email}`} class="link break-all">
+                {contacts.email}
+              </a>
+            </li>
+          )}
+          {contacts.website && (
+            <li class="flex items-center gap-3">
+              <Globe size={18} class="shrink-0 text-muted" aria-hidden="true" />
+              <a href={contacts.website} target="_blank" rel="noopener" class="link break-all">
+                {hostname(contacts.website)}
+              </a>
+            </li>
+          )}
+        </ul>
+        {socials.length > 0 && (
+          <ul class="mt-4 flex flex-wrap gap-2" aria-label="Социальные сети">
+            {socials.map((s) => (
+              <li>
+                <a href={s.url} target="_blank" rel="noopener" class="chip">
+                  {s.label ?? SOCIAL_LABEL[s.network]}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )
+  }
+
+  {
+    registrationUrl && (
+      <a href={registrationUrl} target="_blank" rel="noopener" class="btn-accent mt-6 w-full">
+        <Ticket size={16} aria-hidden="true" />
+        Регистрация и билеты
+      </a>
+    )
+  }
+
+  {
+    links.length > 0 && (
+      <div class="mt-6 border-t border-line pt-5">
+        <h3 class="font-sans text-sm font-semibold text-graphite">Ссылки</h3>
+        <ul class="mt-3 space-y-2 text-sm">
+          {links.map((l) => (
+            <li>
+              <a href={l.url} target="_blank" rel="noopener" class="link inline-flex items-center gap-1.5">
+                {l.label}
+                <ExternalLink size={13} aria-hidden="true" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</section>

@@ -1,0 +1,193 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image, getImage } from 'astro:assets';
+import { ExternalLink, MapPin } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import ListingCard from '@/components/cards/ListingCard.astro';
+import EventCard from '@/components/cards/EventCard.astro';
+import GuideCard from '@/components/cards/GuideCard.astro';
+import EmptyState from '@/components/ui/EmptyState.astro';
+import MapBlock from '@/components/entity/MapBlock.astro';
+import PhotoCredit from '@/components/ui/PhotoCredit.astro';
+import { eventsInSettlement, getCatalog, listingsInSettlement } from '@/lib/catalog';
+import { countLabel, SETTLEMENT_KIND_LABEL, truncate } from '@/lib/format';
+import { settlementSchema } from '@/lib/seo';
+import { distanceKm } from '@/lib/geo';
+import { absoluteUrl, routes } from '@/lib/url';
+
+export const getStaticPaths = (async () => {
+  const catalog = await getCatalog();
+  return catalog.settlements.map((s) => ({ params: { slug: s.slug } }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const catalog = await getCatalog();
+const settlement = catalog.settlementById.get(slug);
+if (!settlement) throw new Error(`Нет населённого пункта ${slug}`);
+
+const all = listingsInSettlement(catalog, settlement.id).sort(
+  (a, b) => Number(b.featured) - Number(a.featured) || Number(a.demo) - Number(b.demo) || a.title.localeCompare(b.title, 'ru'),
+);
+const places = all.filter((l) => l.kind === 'place');
+const business = all.filter((l) => l.kind !== 'place');
+const events = eventsInSettlement(catalog, settlement.id);
+const guides = catalog.guides.filter((g) => g.itemIds.some((id) => catalog.listingById.get(id)?.settlement.id === settlement.id));
+const origin = settlement.coordinates;
+const neighbours = origin
+  ? catalog.settlements
+      .filter((s) => s.id !== settlement.id && s.coordinates)
+      .map((s) => ({ s, km: distanceKm(origin, s.coordinates!) }))
+      .sort((a, b) => a.km - b.km)
+      .slice(0, 3)
+  : [];
+
+const crumbs = [
+  { label: 'Главная', href: routes.home() },
+  { label: 'География', href: routes.geography() },
+  { label: settlement.title, href: routes.settlement(settlement.slug) },
+];
+const site = Astro.site;
+const og = await getImage({ src: settlement.photo.src, width: 1200, height: 630, fit: 'cover', format: 'jpg' });
+const schema = settlementSchema(settlement, absoluteUrl(routes.settlement(settlement.slug), site), absoluteUrl(og.src, site));
+---
+
+<BaseLayout
+  title={`${settlement.title}: что посмотреть, где остановиться и чем заняться`}
+  description={truncate(`${settlement.title} — ${settlement.summary} ${settlement.description[0] ?? ''}`)}
+  image={settlement.photo}
+  breadcrumbs={crumbs}
+  jsonLd={[schema]}
+>
+  <section class="relative isolate overflow-hidden bg-graphite text-white">
+    <Image
+      src={settlement.photo.src}
+      alt={settlement.photo.alt}
+      widths={[640, 960, 1280, 1600]}
+      sizes="100vw"
+      priority
+      class="absolute inset-0 -z-20 h-full w-full object-cover"
+    />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-graphite/90 via-graphite/50 to-graphite/30"></div>
+    <div class="container-page pt-10 pb-12 sm:pt-14 sm:pb-16">
+      <Breadcrumbs items={crumbs} tone="light" />
+      <p class="eyebrow mt-16 text-white/80 sm:mt-24">{SETTLEMENT_KIND_LABEL[settlement.kind]} · {settlement.region.title}</p>
+      <h1 class="mt-2 text-5xl text-white sm:text-6xl">{settlement.title}</h1>
+      <p class="mt-4 max-w-2xl text-lg text-white/85">{settlement.summary}</p>
+      <p class="mt-6 flex flex-wrap gap-x-5 gap-y-1 text-sm text-white/80">
+        <span>{countLabel(places.length, ['место', 'места', 'мест'])}</span>
+        <span>{countLabel(business.length, ['организация и услуга', 'организации и услуги', 'организаций и услуг'])}</span>
+        <span>{countLabel(events.length, ['событие', 'события', 'событий'])}</span>
+      </p>
+    </div>
+  </section>
+
+  <div class="container-page grid gap-10 py-12 lg:grid-cols-12">
+    <div class="lg:col-span-7">
+      <h2 class="sr-only">О территории</h2>
+      <div class="prose-text">
+        {settlement.description.map((p) => <p>{p}</p>)}
+      </div>
+      <PhotoCredit photo={settlement.photo} class="mt-6" />
+    </div>
+    <aside class="space-y-4 lg:col-span-5">
+      {settlement.coordinates && <MapBlock coordinates={settlement.coordinates} title={settlement.title} />}
+      <div class="flex flex-wrap gap-2">
+        <a href={routes.catalog({ settlement: settlement.id })} class="btn-primary">
+          <MapPin size={16} aria-hidden="true" />
+          Всё в каталоге: {settlement.title}
+        </a>
+        {
+          settlement.wikipedia && (
+            <a href={settlement.wikipedia} target="_blank" rel="noopener" class="btn-secondary">
+              Википедия
+              <ExternalLink size={14} aria-hidden="true" />
+            </a>
+          )
+        }
+      </div>
+    </aside>
+  </div>
+
+  <section class="container-page py-8" aria-labelledby="sights">
+    <SectionHeading id="sights" title="Достопримечательности" eyebrow={settlement.title} />
+    {
+      places.length > 0 ? (
+        <ul class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {places.map((l) => (
+            <li>
+              <ListingCard listing={l} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="mt-6">
+          <EmptyState title="Пока нет мест" text="Знаете интересное место здесь? Предложите его для каталога." />
+        </div>
+      )
+    }
+  </section>
+
+  <section class="container-page py-8" aria-labelledby="business">
+    <SectionHeading id="business" title="Организации и услуги" eyebrow={settlement.title} />
+    {
+      business.length > 0 ? (
+        <ul class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {business.map((l) => (
+            <li>
+              <ListingCard listing={l} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="mt-6">
+          <EmptyState title="Организаций пока нет" text="Если вы ведёте здесь дело — добавьте свою организацию или услугу.">
+            <a href={routes.suggest()} class="btn-primary mt-5">
+              Добавить организацию
+            </a>
+          </EmptyState>
+        </div>
+      )
+    }
+  </section>
+
+  <section class="container-page py-8" aria-labelledby="events">
+    <SectionHeading id="events" title="Мероприятия" eyebrow={settlement.title} link={{ href: routes.events(), label: 'Вся афиша' }} />
+    {
+      events.length > 0 ? (
+        <ul class="mt-6 grid gap-4 lg:grid-cols-2">
+          {events.map((e) => (
+            <li>
+              <EventCard event={e} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="mt-6 text-muted">В афише пока нет событий в этом месте.</p>
+      )
+    }
+  </section>
+
+  {
+    guides.length > 0 && (
+      <section class="container-page py-8" aria-labelledby="guides">
+        <SectionHeading id="guides" title="Подборки с этим местом" />
+        <ul class="mt-6 grid gap-5 lg:grid-cols-2">
+          {guides.map((g) => (
+            <li>
+              <GuideCard guide={g} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <nav aria-label="Ближайшие направления" class="container-page mt-8">
+    <ul class="flex flex-wrap gap-2">
+      {neighbours.map(({ s, km }) => <li><a href={routes.settlement(s.slug)} class="chip">Рядом: {s.title} <span class="text-xs text-muted">≈ {Math.max(1, Math.round(km))} км по прямой</span></a></li>)}
+      <li><a href={routes.geography()} class="chip">Все направления</a></li>
+    </ul>
+  </nav>
+</BaseLayout>
