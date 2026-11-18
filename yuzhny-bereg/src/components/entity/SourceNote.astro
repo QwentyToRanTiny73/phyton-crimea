@@ -1,0 +1,41 @@
+---
+import { ShieldCheck } from '@lucide/astro';
+import type { Verification } from '@/types/domain';
+import { formatDate, hostname } from '@/lib/format';
+
+interface Props {
+  verification: Verification;
+  updatedAt: Date;
+}
+const { verification: v, updatedAt } = Astro.props;
+const label: Record<Verification['status'], string> = {
+  sourced: 'Описание составлено по открытым источникам',
+  owner: 'Данные подтверждены владельцем',
+  demo: 'Тестовая запись',
+  unverified: 'Данные требуют проверки',
+};
+---
+
+<section aria-label="Источники и актуальность" class="rounded-card border border-line/70 bg-white/50 p-5 text-sm text-muted">
+  <p class="flex items-center gap-2 font-semibold text-graphite-soft">
+    <ShieldCheck size={16} aria-hidden="true" />
+    {label[v.status]}
+  </p>
+  {v.note && <p class="mt-2 leading-relaxed">{v.note}</p>}
+  {
+    v.sources.length > 0 && (
+      <p class="mt-2">
+        Источники:{' '}
+        {v.sources.map((s, i) => (
+          <>
+            {i > 0 && ', '}
+            <a href={s} target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-graphite">
+              {hostname(s)}
+            </a>
+          </>
+        ))}
+      </p>
+    )
+  }
+  <p class="mt-2 text-xs">Обновлено {formatDate(updatedAt)}{v.checkedAt && ` · проверено ${formatDate(v.checkedAt)}`}</p>
+</section>

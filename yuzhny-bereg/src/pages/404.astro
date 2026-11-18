@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCatalog } from '@/lib/catalog';
+import { routes } from '@/lib/url';
+
+const catalog = await getCatalog();
+const picks = catalog.categories.slice(0, 6);
+---
+
+<BaseLayout title="Страница не найдена" description="Такой страницы нет. Воспользуйтесь поиском по каталогу или перейдите в один из разделов." noindex>
+  <section class="container-page flex flex-col items-start py-20 sm:py-28">
+    <p class="eyebrow">Ошибка 404</p>
+    <h1 class="mt-3 max-w-2xl text-5xl leading-tight sm:text-6xl">Эта тропа никуда не ведёт</h1>
+    <p class="mt-5 max-w-xl text-lg text-muted">Страница не найдена: возможно, ссылка устарела или в адресе опечатка. Попробуйте поиск или загляните в разделы.</p>
+    <form action={routes.catalog()} method="get" role="search" class="mt-8 flex w-full max-w-xl gap-2">
+      <label for="nf-q" class="sr-only">Поиск по каталогу</label>
+      <input id="nf-q" name="q" type="search" placeholder="Что вы искали?" class="field h-12 flex-1 text-base" />
+      <button class="btn-primary h-12">Найти</button>
+    </form>
+    <ul class="mt-8 flex flex-wrap gap-2">
+      <li><a href={routes.home()} class="chip chip-active">На главную</a></li>
+      {picks.map((c) => <li><a href={routes.category(c.slug)} class="chip">{c.title}</a></li>)}
+    </ul>
+  </section>
+</BaseLayout>

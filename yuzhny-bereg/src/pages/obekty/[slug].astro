@@ -1,0 +1,226 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getImage } from 'astro:assets';
+import { Briefcase, Building, Check, Flag, MapPin, Tag } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import Gallery from '@/components/entity/Gallery.astro';
+import InfoPanel from '@/components/entity/InfoPanel.astro';
+import MapBlock from '@/components/entity/MapBlock.astro';
+import DemoNotice from '@/components/entity/DemoNotice.astro';
+import SourceNote from '@/components/entity/SourceNote.astro';
+import DemoBadge from '@/components/ui/DemoBadge.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import ListingCard from '@/components/cards/ListingCard.astro';
+import EventCard from '@/components/cards/EventCard.astro';
+import GuideCard from '@/components/cards/GuideCard.astro';
+import { eventsLinkedTo, getCatalog, guidesWith, relatedListings, renderBody, servicesOf } from '@/lib/catalog';
+import { KIND_LABEL, LEGAL_FORM_LABEL, truncate } from '@/lib/format';
+import { listingSchema } from '@/lib/seo';
+import { absoluteUrl, routes } from '@/lib/url';
+
+export const getStaticPaths = (async () => {
+  const catalog = await getCatalog();
+  return catalog.listings.map((l) => ({ params: { slug: l.slug } }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const catalog = await getCatalog();
+const listing = catalog.listingById.get(slug);
+if (!listing) throw new Error(`Нет объекта ${slug}`);
+
+const { Content } = await renderBody('listing', listing.id);
+const provider = listing.providerId ? catalog.listingById.get(listing.providerId) : undefined;
+const services = listing.kind === 'organization' ? servicesOf(catalog, listing.id) : [];
+const events = eventsLinkedTo(catalog, listing.id);
+const guides = guidesWith(catalog, listing.id);
+const related = relatedListings(catalog, listing, 4);
+const KindIcon = { place: Flag, organization: Building, service: Briefcase }[listing.kind];
+
+const rows = [
+  listing.address ? { icon: 'address' as const, label: 'Адрес', value: `${listing.settlement.title}, ${listing.address}` } : { icon: 'address' as const, label: 'Населённый пункт', value: listing.settlement.title, href: routes.settlement(listing.settlement.slug) },
+  ...(listing.hours ? [{ icon: 'hours' as const, label: 'Режим работы', value: listing.hours }] : []),
+  ...(listing.price ? [{ icon: 'price' as const, label: 'Стоимость', value: listing.price }] : []),
+  ...(provider ? [{ icon: 'organizer' as const, label: 'Исполнитель', value: provider.title, href: routes.listing(provider.slug) }] : []),
+  ...(listing.legalForm ? [{ icon: 'organizer' as const, label: 'Форма', value: LEGAL_FORM_LABEL[listing.legalForm] }] : []),
+];
+
+const crumbs = [
+  { label: 'Главная', href: routes.home() },
+  { label: listing.category.title, href: routes.category(listing.category.slug) },
+  { label: listing.title, href: routes.listing(listing.slug) },
+];
+const site = Astro.site;
+const pageUrl = absoluteUrl(routes.listing(listing.slug), site);
+const cover = listing.photos[0];
+const og = cover ? await getImage({ src: cover.src, width: 1200, height: 630, fit: 'cover', format: 'jpg' }) : undefined;
+const schema = listingSchema(listing, pageUrl, og ? absoluteUrl(og.src, site) : undefined);
+const title = `${listing.title} — ${listing.settlement.title}`;
+---
+
+<BaseLayout
+  title={title}
+  description={truncate(listing.summary)}
+  image={cover}
+  ogType="article"
+  noindex={listing.demo}
+  breadcrumbs={crumbs}
+  jsonLd={[schema]}
+>
+  <article>
+    <header class="container-page pt-8 sm:pt-10">
+      <Breadcrumbs items={crumbs} />
+      <div class="mt-6 flex flex-wrap items-center gap-2">
+        <a href={routes.category(listing.category.slug)} class="chip">{listing.category.title}</a>
+        {listing.serviceTypes.map((t) => <a href={routes.catalog({ type: t.id })} class="chip">{t.title}</a>)}
+        {listing.demo && <DemoBadge />}
+      </div>
+      <h1 class="mt-4 max-w-4xl text-4xl leading-tight sm:text-5xl">{listing.title}</h1>
+      <p class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
+        <span class="inline-flex items-center gap-1.5">
+          <MapPin size={15} aria-hidden="true" />
+          <a href={routes.settlement(listing.settlement.slug)} class="hover:text-graphite">{listing.settlement.title}</a>
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <KindIcon size={15} aria-hidden="true" />
+          {KIND_LABEL[listing.kind]}
+        </span>
+      </p>
+    </header>
+
+    <div class="container-page mt-8 grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        {listing.demo && <div class="mb-6"><DemoNotice kind="listing" /></div>}
+        <Gallery photos={listing.photos} category={listing.category} />
+        <p class="mt-8 font-serif text-xl leading-relaxed text-graphite sm:text-2xl">{listing.summary}</p>
+        <div class="prose-text mt-6">
+          <Content />
+        </div>
+
+        {
+          listing.features.length > 0 && (
+            <section class="mt-10" aria-labelledby="features">
+              <h2 id="features" class="text-2xl">
+                Особенности
+              </h2>
+              <ul class="mt-4 grid gap-2.5 sm:grid-cols-2">
+                {listing.features.map((f) => (
+                  <li class="flex gap-2.5 text-sm text-graphite-soft">
+                    <Check size={18} class="mt-0.5 shrink-0 text-olive" aria-hidden="true" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        {
+          listing.locations.length > 0 && (
+            <section class="mt-10" aria-labelledby="locations">
+              <h2 id="locations" class="text-2xl">
+                Локации
+              </h2>
+              <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+                {listing.locations.map((loc) => (
+                  <li class="rounded-xl border border-line bg-white/60 p-4 text-sm">
+                    <p class="font-semibold text-graphite">{loc.title ?? loc.settlement.title}</p>
+                    <p class="mt-1 text-muted">
+                      <a href={routes.settlement(loc.settlement.slug)} class="link">
+                        {loc.settlement.title}
+                      </a>
+                      {loc.address && `, ${loc.address}`}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        {
+          listing.tags.length > 0 && (
+            <ul class="mt-10 flex flex-wrap gap-2" aria-label="Теги">
+              {listing.tags.map((t) => (
+                <li>
+                  <a href={routes.catalog({ q: t })} class="inline-flex items-center gap-1 rounded-full bg-sand-100 px-3 py-1 text-xs text-graphite-soft hover:bg-sand-200">
+                    <Tag size={12} aria-hidden="true" />
+                    {t}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      <aside class="space-y-4 lg:col-span-5">
+        <div class="space-y-4 lg:sticky lg:top-24">
+          <InfoPanel rows={rows} contacts={listing.contacts} socials={listing.socials} links={listing.links} />
+          {listing.coordinates && <MapBlock coordinates={listing.coordinates} title={listing.title} />}
+          <SourceNote verification={listing.verification} updatedAt={listing.updatedAt} />
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  {
+    services.length > 0 && (
+      <section class="container-page mt-16" aria-labelledby="services">
+        <SectionHeading id="services" eyebrow={listing.title} title="Услуги" />
+        <ul class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {services.map((s) => (
+            <li>
+              <ListingCard listing={s} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    events.length > 0 && (
+      <section class="container-page mt-16" aria-labelledby="linked-events">
+        <SectionHeading id="linked-events" eyebrow={listing.title} title="Мероприятия" link={{ href: routes.events(), label: 'Вся афиша' }} />
+        <ul class="mt-6 grid gap-4 lg:grid-cols-2">
+          {events.map((e) => (
+            <li>
+              <EventCard event={e} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    guides.length > 0 && (
+      <section class="container-page mt-16" aria-labelledby="in-guides">
+        <SectionHeading id="in-guides" title="Входит в подборки" />
+        <ul class="mt-6 grid gap-5 lg:grid-cols-2">
+          {guides.map((g) => (
+            <li>
+              <GuideCard guide={g} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    related.length > 0 && (
+      <section class="container-page mt-16" aria-labelledby="related">
+        <SectionHeading id="related" title="Похожие и рядом" link={{ href: routes.catalog({ category: listing.category.id }), label: `Всё: ${listing.category.title}` }} />
+        <ul class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {related.map((l) => (
+            <li>
+              <ListingCard listing={l} sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</BaseLayout>

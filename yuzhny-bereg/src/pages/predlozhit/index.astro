@@ -1,0 +1,175 @@
+---
+import { Copy, ExternalLink, Mail, Send } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/layout/PageHeader.astro';
+import { getCatalog } from '@/lib/catalog';
+import { routes } from '@/lib/url';
+import { SITE } from '@/data/site';
+
+const catalog = await getCatalog();
+const { email, formUrl } = SITE.suggest;
+const crumbs = [
+  { label: 'Главная', href: routes.home() },
+  { label: 'Предложить объект', href: routes.suggest() },
+];
+const label = 'mb-1.5 block text-sm font-semibold text-graphite';
+---
+
+<BaseLayout
+  title="Предложить место, организацию, услугу или событие"
+  description="Добавьте достопримечательность, кафе, гостиницу, мастерскую, гида или мероприятие Большой Ялты в каталог «Южного берега»."
+  breadcrumbs={crumbs}
+>
+  <PageHeader
+    breadcrumbs={crumbs}
+    eyebrow="Для владельцев и путешественников"
+    title="Предложить объект"
+    intro="Расскажите о месте, организации, услуге или событии. Редакция проверит данные по открытым источникам или у владельца и опубликует карточку."
+  />
+
+  <div class="container-page grid gap-10 py-10 lg:grid-cols-12">
+    <div class="lg:col-span-8">
+      {
+        formUrl && (
+          <div class="mb-8 rounded-card bg-sea-soft p-5 text-sea-dark">
+            <p class="font-semibold">Заявки принимаются через онлайн-форму</p>
+            <a href={formUrl} target="_blank" rel="noopener" class="btn mt-4 bg-sea text-white hover:bg-sea-dark">
+              Открыть форму
+              <ExternalLink size={15} aria-hidden="true" />
+            </a>
+            <p class="mt-3 text-sm">Или заполните поля ниже — мы подготовим текст заявки, который можно отправить удобным способом.</p>
+          </div>
+        )
+      }
+
+      <form data-suggest-form data-email={email} class="space-y-6 rounded-card bg-white p-5 shadow-card sm:p-8">
+        <fieldset class="grid gap-5 sm:grid-cols-2">
+          <legend class="mb-4 font-serif text-2xl text-graphite">Что добавить</legend>
+          <div>
+            <label for="s-type" class={label}>Тип *</label>
+            <select id="s-type" name="type" data-label="Тип" required class="field">
+              <option>Место или достопримечательность</option>
+              <option>Организация</option>
+              <option>Услуга или частный специалист</option>
+              <option>Событие</option>
+            </select>
+          </div>
+          <div>
+            <label for="s-category" class={label}>Категория</label>
+            <select id="s-category" name="category" data-label="Категория" class="field">
+              <option value="">Не знаю</option>
+              {catalog.categories.map((c) => <option>{c.title}</option>)}
+            </select>
+          </div>
+          <div class="sm:col-span-2">
+            <label for="s-title" class={label}>Название *</label>
+            <input id="s-title" name="title" data-label="Название" required maxlength="140" class="field" autocomplete="off" />
+          </div>
+          <div>
+            <label for="s-settlement" class={label}>Населённый пункт *</label>
+            <select id="s-settlement" name="settlement" data-label="Населённый пункт" required class="field">
+              <option value="">Выберите</option>
+              {catalog.settlements.map((s) => <option>{s.title}</option>)}
+              <option>Другое место ЮБК</option>
+            </select>
+          </div>
+          <div>
+            <label for="s-address" class={label}>Адрес или ориентир</label>
+            <input id="s-address" name="address" data-label="Адрес" class="field" />
+          </div>
+          <div class="grid gap-5 sm:col-span-2 sm:grid-cols-2" data-event-fields hidden>
+            <div>
+              <label for="s-date" class={label}>Дата события</label>
+              <input id="s-date" name="date" type="date" data-label="Дата" class="field" />
+            </div>
+            <div>
+              <label for="s-time" class={label}>Время</label>
+              <input id="s-time" name="time" type="time" data-label="Время" class="field" />
+            </div>
+          </div>
+          <div class="sm:col-span-2">
+            <label for="s-description" class={label}>Описание *</label>
+            <textarea id="s-description" name="description" data-label="Описание" required rows="5" maxlength="2000" class="field" placeholder="Чем интересно место, что предлагает организация, для кого событие"></textarea>
+          </div>
+          <div class="sm:col-span-2">
+            <label for="s-links" class={label}>Сайт, соцсети, телефон объекта</label>
+            <input id="s-links" name="links" data-label="Ссылки и контакты объекта" class="field" placeholder="Только публичные контакты" />
+          </div>
+        </fieldset>
+
+        <fieldset class="grid gap-5 border-t border-line pt-6 sm:grid-cols-2">
+          <legend class="mb-4 font-serif text-2xl text-graphite">О вас</legend>
+          <div>
+            <label for="s-role" class={label}>Кто вы</label>
+            <select id="s-role" name="role" data-label="Отправитель" class="field">
+              <option>Владелец или представитель</option>
+              <option>Посетитель, житель</option>
+              <option>Гид или организатор</option>
+            </select>
+          </div>
+          <div>
+            <label for="s-name" class={label}>Имя</label>
+            <input id="s-name" name="name" data-label="Имя" class="field" autocomplete="name" />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="s-contact" class={label}>Как с вами связаться *</label>
+            <input id="s-contact" name="contact" data-label="Связь с отправителем" required class="field" placeholder="E-mail, телефон или Telegram" />
+          </div>
+          <label class="flex gap-3 text-sm text-muted sm:col-span-2">
+            <input type="checkbox" name="consent" required class="mt-1 size-4 shrink-0 accent-sea" />
+            <span>Согласен(на) на обработку данных для проверки и публикации объекта. Контакты отправителя не публикуются.</span>
+          </label>
+        </fieldset>
+
+        <div class="flex flex-wrap items-center gap-3 border-t border-line pt-6">
+          <button type="submit" class="btn-accent">
+            <Send size={16} aria-hidden="true" />
+            {email ? 'Сформировать письмо' : 'Сформировать заявку'}
+          </button>
+          <p class="text-xs text-muted">Сайт работает без сервера: данные не сохраняются на сайте, вы отправляете заявку сами.</p>
+        </div>
+        <noscript><p class="text-sm text-terracotta-dark">Чтобы сформировать заявку, включите JavaScript.</p></noscript>
+      </form>
+
+      <section data-suggest-result hidden class="mt-8 rounded-card border border-olive/30 bg-olive-soft/50 p-5 sm:p-6" aria-labelledby="suggest-result">
+        <h2 id="suggest-result" class="text-2xl">Заявка готова</h2>
+        <p class="mt-2 text-sm text-graphite-soft">
+          {
+            email
+              ? 'Должен был открыться почтовый клиент с готовым письмом. Если этого не произошло — скопируйте текст и отправьте на адрес редакции.'
+              : 'Скопируйте текст и отправьте его редакции удобным способом.'
+          }
+        </p>
+        <label for="suggest-text" class="sr-only">Текст заявки</label>
+        <textarea id="suggest-text" data-suggest-text rows="10" readonly class="field mt-4 font-mono text-xs"></textarea>
+        <div class="mt-3 flex flex-wrap items-center gap-3">
+          <button type="button" data-suggest-copy class="btn-secondary"><Copy size={15} aria-hidden="true" />Скопировать</button>
+          {email && <a data-suggest-mail hidden href={`mailto:${email}`} class="btn-secondary"><Mail size={15} aria-hidden="true" />Открыть письмо ещё раз</a>}
+          <span data-copy-status aria-live="polite" class="text-sm text-olive-dark"></span>
+        </div>
+        {email && <p class="mt-3 text-sm text-muted">Адрес редакции: <a href={`mailto:${email}`} class="link">{email}</a></p>}
+      </section>
+    </div>
+
+    <aside class="space-y-4 text-sm leading-relaxed text-graphite-soft lg:col-span-4">
+      <div class="rounded-card bg-sand-50 p-5">
+        <h2 class="font-sans text-sm font-semibold text-graphite">Как мы публикуем</h2>
+        <ol class="mt-3 list-decimal space-y-2 pl-5">
+          <li>Проверяем сведения по открытым источникам или у владельца.</li>
+          <li>Не публикуем непроверенные телефоны, цены и расписания.</li>
+          <li>Указываем источник данных и дату обновления на странице объекта.</li>
+        </ol>
+      </div>
+      <div class="rounded-card bg-sand-50 p-5">
+        <h2 class="font-sans text-sm font-semibold text-graphite">Фото</h2>
+        <p class="mt-2">Используем только снимки, на которые есть права: ваши собственные или под свободной лицензией с указанием автора.</p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
+
+<script>
+  import { initSuggest } from '@/scripts/suggest';
+  const form = document.querySelector<HTMLFormElement>('[data-suggest-form]');
+  if (form) initSuggest(form);
+</script>

@@ -1,0 +1,31 @@
+---
+import { ChevronRight } from '@lucide/astro';
+import type { Crumb } from '@/lib/seo';
+
+interface Props {
+  items: Crumb[];
+  tone?: 'dark' | 'light';
+}
+const { items, tone = 'dark' } = Astro.props;
+---
+
+<nav aria-label="Хлебные крошки" class:list={['text-sm', tone === 'light' ? 'text-white/85' : 'text-muted']}>
+  <ol class="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+    {
+      items.map((c, i) => (
+        <li class="flex items-center gap-1.5">
+          {i > 0 && <ChevronRight size={14} aria-hidden="true" class="opacity-60" />}
+          {i === items.length - 1 ? (
+            <span aria-current="page" class:list={['line-clamp-1', tone === 'light' ? 'text-white' : 'text-graphite']}>
+              {c.label}
+            </span>
+          ) : (
+            <a href={c.href} class="underline-offset-4 hover:underline">
+              {c.label}
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

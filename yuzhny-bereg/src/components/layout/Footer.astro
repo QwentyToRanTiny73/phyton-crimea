@@ -1,0 +1,60 @@
+---
+import Logo from './Logo.astro';
+import { NAV_ITEMS } from './nav';
+import { getCatalog } from '@/lib/catalog';
+import { routes } from '@/lib/url';
+import { SITE } from '@/data/site';
+
+const catalog = await getCatalog();
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-line bg-sand-50">
+  <div class="container-page grid gap-10 py-14 md:grid-cols-12">
+    <div class="md:col-span-4">
+      <Logo class="text-graphite" />
+      <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted">{SITE.description}</p>
+      <a href={routes.suggest()} class="link mt-4 inline-block text-sm">Предложить место, услугу или событие</a>
+    </div>
+
+    <nav aria-label="Разделы" class="md:col-span-2">
+      <h2 class="eyebrow font-sans">Разделы</h2>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        {NAV_ITEMS.map((item) => <li><a href={item.href} class="text-graphite-soft hover:text-graphite">{item.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-label="География" class="md:col-span-4">
+      <h2 class="eyebrow font-sans">Большая Ялта</h2>
+      <ul class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm">
+        {
+          catalog.settlements.map((s) => (
+            <li>
+              <a href={routes.settlement(s.slug)} class="text-graphite-soft hover:text-graphite">
+                {s.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <nav aria-label="О проекте" class="md:col-span-2">
+      <h2 class="eyebrow font-sans">Проект</h2>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        <li><a href={routes.about()} class="text-graphite-soft hover:text-graphite">О проекте</a></li>
+        <li><a href={routes.sources()} class="text-graphite-soft hover:text-graphite">Источники и фото</a></li>
+        <li><a href={routes.suggest()} class="text-graphite-soft hover:text-graphite">Предложить объект</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="border-t border-line">
+    <div class="container-page flex flex-col gap-2 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} {SITE.name}. Независимый региональный справочник.</p>
+      <p>
+        Записи с пометкой «Демо» — тестовые и вымышленные. Фото —
+        <a href={routes.sources()} class="underline underline-offset-2 hover:text-graphite">Wikimedia Commons, свободные лицензии</a>.
+      </p>
+    </div>
+  </div>
+</footer>

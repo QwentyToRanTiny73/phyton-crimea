@@ -1,0 +1,86 @@
+---
+import { RotateCcw } from '@lucide/astro';
+import type { EventCategory, EventItem } from '@/types/domain';
+import EventCard from '@/components/cards/EventCard.astro';
+import EmptyState from '@/components/ui/EmptyState.astro';
+import { countLabel, isoDate } from '@/lib/format';
+import { routes } from '@/lib/url';
+
+interface Props {
+  events: EventItem[];
+  categories: EventCategory[];
+}
+const { events, categories } = Astro.props;
+const used = categories.filter((c) => events.some((e) => e.eventCategory.id === c.id));
+---
+
+<div data-events>
+  <form data-events-form aria-label="Фильтры афиши" class="rounded-card border border-line/70 bg-white/70 p-4 shadow-card sm:p-5">
+    <fieldset>
+      <legend class="mb-2 text-xs font-semibold text-muted">Категория</legend>
+      <div class="flex flex-wrap gap-2">
+        <label class="cursor-pointer">
+          <input type="radio" name="category" value="" checked class="peer sr-only" />
+          <span class="chip peer-checked:chip-active peer-focus-visible:outline-2 peer-focus-visible:outline-sea">Все</span>
+        </label>
+        {
+          used.map((c) => (
+            <label class="cursor-pointer">
+              <input type="radio" name="category" value={c.id} class="peer sr-only" />
+              <span class="chip peer-checked:chip-active peer-focus-visible:outline-2 peer-focus-visible:outline-sea">{c.title}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+      <div>
+        <label for="events-period" class="mb-1 block text-xs font-semibold text-muted">Период</label>
+        <select id="events-period" name="period" class="field">
+          <option value="upcoming">Все предстоящие</option>
+          <option value="today">Сегодня</option>
+          <option value="weekend">Ближайшие выходные</option>
+          <option value="week">Ближайшие 7 дней</option>
+          <option value="month">Ближайшие 30 дней</option>
+          <option value="past">Прошедшие</option>
+          <option value="all">За всё время</option>
+        </select>
+      </div>
+      <div>
+        <label for="events-date" class="mb-1 block text-xs font-semibold text-muted">Конкретная дата</label>
+        <input id="events-date" name="date" type="date" class="field" />
+      </div>
+      <button type="reset" class="inline-flex h-11 items-center gap-1.5 text-sm font-medium text-muted hover:text-graphite">
+        <RotateCcw size={15} aria-hidden="true" />
+        Сбросить
+      </button>
+    </div>
+    <p data-count aria-live="polite" class="mt-4 text-sm font-semibold text-graphite">{countLabel(events.length, ['событие', 'события', 'событий'])}</p>
+    <noscript><p class="mt-2 text-sm text-muted">Фильтры работают при включённом JavaScript. Ниже показаны все события.</p></noscript>
+  </form>
+
+  <ul data-results class="mt-8 grid gap-4 lg:grid-cols-2" aria-label="События">
+    {
+      events.map((e) => (
+        <li data-event data-id={e.id} data-start={isoDate(e.startDate)} data-end={isoDate(e.endDate ?? e.startDate)} data-category={e.eventCategory.id}>
+          <EventCard event={e} />
+        </li>
+      ))
+    }
+  </ul>
+
+  <div data-empty hidden class="mt-8">
+    <EmptyState title="Событий не найдено" text="Измените период или категорию. Организаторы могут добавить своё событие через форму.">
+      <div class="mt-5 flex flex-wrap justify-center gap-2">
+        <button type="button" data-reset-all class="btn-secondary">Показать все предстоящие</button>
+        <a href={routes.suggest()} class="btn-primary">Добавить событие</a>
+      </div>
+    </EmptyState>
+  </div>
+</div>
+
+<script>
+  import { initEvents } from '@/scripts/events';
+  document.querySelectorAll<HTMLElement>('[data-events]').forEach(initEvents);
+</script>

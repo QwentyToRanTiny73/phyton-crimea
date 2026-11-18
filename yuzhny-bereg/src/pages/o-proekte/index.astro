@@ -1,0 +1,60 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/layout/PageHeader.astro';
+import { getCatalog } from '@/lib/catalog';
+import { countLabel } from '@/lib/format';
+import { routes } from '@/lib/url';
+import { SITE } from '@/data/site';
+
+const catalog = await getCatalog();
+const real = catalog.listings.filter((l) => !l.demo).length;
+const demo = catalog.listings.length - real + catalog.events.filter((e) => e.demo).length;
+const crumbs = [
+  { label: 'Главная', href: routes.home() },
+  { label: 'О проекте', href: routes.about() },
+];
+---
+
+<BaseLayout title="О проекте" description={`${SITE.name} — ${SITE.description}`} breadcrumbs={crumbs}>
+  <PageHeader breadcrumbs={crumbs} eyebrow="О проекте" title="Цифровой справочник Южного берега" intro={SITE.description} />
+  <div class="container-page grid gap-12 py-12 lg:grid-cols-12">
+    <div class="prose-text lg:col-span-7">
+      <p>
+        «{SITE.name}» — независимый региональный справочник. Это не блог и не агрегатор отзывов, а структурированный каталог: у каждого
+        места, организации, услуги и события есть своя страница с категорией, населённым пунктом, координатами, контактами и связями с
+        другими записями.
+      </p>
+      <h2>Первый этап — Большая Ялта</h2>
+      <p>
+        Мы начинаем с территории от Фороса до Гурзуфа: одиннадцать городов и посёлков, где сосредоточены дворцы, парки и горные
+        маршруты. Затем платформа охватит весь Южный берег Крыма — модель данных уже рассчитана на новые районы, категории и типы
+        услуг.
+      </p>
+      <h2>Принципы</h2>
+      <ul>
+        <li><strong>Только проверяемые данные.</strong> Описания реальных мест составлены по открытым источникам, они указаны на странице объекта.</li>
+        <li><strong>Никаких выдуманных контактов.</strong> Телефоны, цены и расписания публикуются только после подтверждения владельцем.</li>
+        <li><strong>Честная маркировка.</strong> Тестовые записи помечены «Демо», закрыты от индексации и не попадают в карту сайта.</li>
+        <li><strong>Права на фото.</strong> Используются снимки под свободными лицензиями с указанием автора.</li>
+      </ul>
+      <h2>Сейчас в каталоге</h2>
+      <p>
+        {countLabel(real, ['реальный объект', 'реальных объекта', 'реальных объектов'])} по открытым источникам и
+        {' '}{countLabel(demo, ['демо-запись', 'демо-записи', 'демо-записей'])}, которые показывают, как будут выглядеть карточки
+        гостиниц, кафе, гидов, мастеров и событий.
+      </p>
+    </div>
+    <aside class="space-y-4 lg:col-span-5">
+      <div class="rounded-card bg-sea p-6 text-white">
+        <h2 class="text-2xl text-white">Вы ведёте дело на Южном берегу?</h2>
+        <p class="mt-3 text-white/85">Гостевой дом, кафе, мастерская, экскурсии, морские прогулки — добавьте свою карточку в каталог.</p>
+        <a href={routes.suggest()} class="btn mt-6 bg-white text-sea-dark hover:bg-sand-50">Предложить объект</a>
+      </div>
+      <div class="rounded-card bg-sand-50 p-6 text-sm text-graphite-soft">
+        <h2 class="font-sans text-sm font-semibold text-graphite">Источники</h2>
+        <p class="mt-2">Справочные сведения — Википедия и Викиданные, фотографии — Wikimedia Commons.</p>
+        <a href={routes.sources()} class="link mt-3 inline-block">Список источников и авторов фото</a>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

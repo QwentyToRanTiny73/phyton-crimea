@@ -1,0 +1,53 @@
+---
+import { Image } from 'astro:assets';
+import type { Category, Photo } from '@/types/domain';
+import Cover from '@/components/ui/Cover.astro';
+import PhotoCredit from '@/components/ui/PhotoCredit.astro';
+
+interface Props {
+  photos: Photo[];
+  category: Category;
+}
+const { photos, category } = Astro.props;
+const [main, ...rest] = photos;
+---
+
+{
+  main ? (
+    <figure>
+      <div class="overflow-hidden rounded-card bg-sand-100">
+        <Image
+          src={main.src}
+          alt={main.alt}
+          widths={[640, 960, 1280, 1600]}
+          sizes="(min-width: 1280px) 760px, (min-width: 1024px) 60vw, 100vw"
+          priority
+          class="aspect-[16/10] h-auto w-full object-cover"
+        />
+      </div>
+      <figcaption class="mt-2">
+        <PhotoCredit photo={main} />
+      </figcaption>
+    </figure>
+  ) : (
+    <div class="aspect-[16/10] overflow-hidden rounded-card">
+      <Cover tone={category.tone} icon={category.icon} iconSize={64} />
+    </div>
+  )
+}
+{
+  rest.length > 0 && (
+    <ul class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {rest.map((p) => (
+        <li>
+          <figure>
+            <Image src={p.src} alt={p.alt} widths={[320, 480, 640]} sizes="(min-width: 640px) 240px, 50vw" class="aspect-[4/3] w-full rounded-xl object-cover" />
+            <figcaption class="mt-1">
+              <PhotoCredit photo={p} />
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+  )
+}

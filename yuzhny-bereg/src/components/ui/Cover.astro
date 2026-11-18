@@ -1,0 +1,30 @@
+---
+/**
+ * Обложка для записей без фотографии: абстрактный пейзаж (горы, море, солнце) в цвете категории.
+ * Это не имитация фото — так помечаются демо-записи и объекты, у которых ещё нет снимка.
+ */
+import type { Tone } from '@/types/domain';
+import type { IconKey } from '@/data/icon-keys';
+import { ICONS } from '@/lib/icons';
+import { TONE } from '@/lib/tone';
+
+interface Props {
+  tone: Tone;
+  icon: IconKey;
+  class?: string;
+  iconSize?: number;
+}
+const { tone, icon, class: className = '', iconSize = 40 } = Astro.props;
+const Icon = ICONS[icon];
+const t = TONE[tone];
+---
+
+<div class:list={['relative flex h-full w-full items-center justify-center overflow-hidden', t.surface, t.ink, className]}>
+  <svg class="absolute inset-0 h-full w-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <circle cx="300" cy="92" r="34" fill="currentColor" opacity="0.12"></circle>
+    <path d="M0 210 L70 140 L120 180 L190 105 L260 175 L310 140 L400 200 L400 300 L0 300 Z" fill="currentColor" opacity="0.1"></path>
+    <path d="M0 236 C40 226 80 246 120 236 S200 226 240 236 S320 246 400 232 L400 300 L0 300 Z" fill="currentColor" opacity="0.14"></path>
+    <path d="M0 262 C50 252 90 270 140 262 S230 252 280 262 S360 270 400 258 L400 300 L0 300 Z" fill="currentColor" opacity="0.18"></path>
+  </svg>
+  <Icon size={iconSize} stroke-width={1.5} class="relative opacity-80" aria-hidden="true" />
+</div>

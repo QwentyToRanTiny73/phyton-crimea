@@ -1,0 +1,345 @@
+[
+  {
+    "id": "livadiyskiy-dvorets",
+    "src": "../assets/photos/livadiyskiy-dvorets.jpg",
+    "alt": "Белый фасад Ливадийского дворца и парадный газон перед ним",
+    "author": "Derevyagin Igor",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9B%D1%96%D0%B2%D0%B0%D0%B4%D1%96%D0%B9%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%BF%D0%B0%D0%BB%D0%B0%D1%86%D0%BE%D0%B2%D0%B8%D0%B9_%D0%BA%D0%BE%D0%BC%D0%BF%D0%BB%D0%B5%D0%BA%D1%817.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "lastochkino-gnezdo",
+    "src": "../assets/photos/lastochkino-gnezdo.jpg",
+    "alt": "Замок «Ласточкино гнездо» на краю отвесной скалы над морем",
+    "author": "A.Savin",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crimea_South_Coast_04-14_img10_Gaspra_Swallows_Nest.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "vorontsovskiy-dvorets",
+    "src": "../assets/photos/vorontsovskiy-dvorets.jpg",
+    "alt": "Фасад Воронцовского дворца в Алупке с зубчатыми башнями",
+    "author": "Tiia Monto",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alupka_castle6.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "massandrovskiy-dvorets",
+    "src": "../assets/photos/massandrovskiy-dvorets.jpg",
+    "alt": "Массандровский дворец с остроконечными башнями среди зелени",
+    "author": "Hamerani",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Massandra_Palace2.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "nikitskiy-botanicheskiy-sad",
+    "src": "../assets/photos/nikitskiy-botanicheskiy-sad.jpg",
+    "alt": "Беседка и заросли кактусов в Никитском ботаническом саду",
+    "author": "Darkmario",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%91%D0%B5%D1%81%D0%B5%D0%B4%D0%BA%D0%B0_%D0%B2_%D0%BA%D0%B0%D0%BA%D1%82%D1%83%D1%81%D0%B0%D1%85.JPG",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "ay-petri",
+    "src": "../assets/photos/ay-petri.jpg",
+    "alt": "Скалистые зубцы Ай-Петри над хвойным лесом",
+    "author": "Батяшев Александр",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ai-Petri.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "vodopad-uchan-su",
+    "src": "../assets/photos/vodopad-uchan-su.jpg",
+    "alt": "Водопад Учан-Су, падающий по скальному уступу среди леса",
+    "author": "Amaga",
+    "license": "Общественное достояние",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%A3%D1%87%D0%B0%D0%BD-%D0%A1%D1%83.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "skala-diva",
+    "src": "../assets/photos/skala-diva.jpg",
+    "alt": "Скала Дива в Симеизе, вдающаяся в море",
+    "author": "Kamelot",
+    "license": "Общественное достояние",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%94%D1%96%D0%B2%D0%B0.JPG",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "gora-koshka",
+    "src": "../assets/photos/gora-koshka.jpg",
+    "alt": "Гора Кошка над Симеизом",
+    "author": "Dasha Siromakha",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mount_Koshka.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "forosskaya-tserkov",
+    "src": "../assets/photos/forosskaya-tserkov.jpg",
+    "alt": "Форосская церковь на Красной скале над побережьем",
+    "author": "Derevyagin Igor",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%A6%D0%B5%D1%80%D0%BA%D0%B2%D0%B0_%D0%92%D0%BE%D1%81%D0%BA%D1%80%D0%B5%D1%81%D1%96%D0%BD%D0%BD%D1%8F_%D0%A5%D1%80%D0%B8%D1%81%D1%82%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE6.JPG",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "baydarskie-vorota",
+    "src": "../assets/photos/baydarskie-vorota.jpg",
+    "alt": "Арка перевала Байдарские ворота",
+    "author": "Amaga",
+    "license": "Общественное достояние",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Baidar_Gate_2008.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "naberezhnaya-yalty",
+    "src": "../assets/photos/naberezhnaya-yalty.jpg",
+    "alt": "Пешеходная набережная Ялты с пальмами и фасадами зданий",
+    "author": "В. С. Білецький",
+    "license": "Общественное достояние",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9D%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F_%D0%AF%D0%BB%D1%82%D1%8B.JPG",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "belaya-dacha-chekhova",
+    "src": "../assets/photos/belaya-dacha-chekhova.jpg",
+    "alt": "Белый дом Чехова в Ялте среди деревьев сада",
+    "author": "Olga-lyo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%94%D0%BE%D0%BC-%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%90._%D0%9F._%D0%A7%D0%B5%D1%85%D0%BE%D0%B2%D0%B0_%D0%B2_%D0%AF%D0%BB%D1%82%D0%B5.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "skaly-adalary",
+    "src": "../assets/photos/skaly-adalary.jpg",
+    "alt": "Скалы-острова Адалары в море у Гурзуфа",
+    "author": "Владимир Грызлов",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%90%D0%B4%D0%B0%D0%BB%D0%B0%D1%80%D1%8B_02.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "muzey-pushkina-gurzuf",
+    "src": "../assets/photos/muzey-pushkina-gurzuf.jpg",
+    "alt": "Дом-музей А. С. Пушкина в Гурзуфе с балконом и деревьями у входа",
+    "author": "Kamelot",
+    "license": "Общественное достояние",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%9F%D1%83%D1%88%D0%BA%D1%96%D0%BD%D0%B0_%D0%B2_%D0%93%D1%83%D1%80%D0%B7%D1%83%D1%84%D1%96.JPG",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "yusupovskiy-dvorets",
+    "src": "../assets/photos/yusupovskiy-dvorets.jpg",
+    "alt": "Юсуповский дворец в Кореизе среди парка",
+    "author": "Hamerani",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:A22_0960.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "tsarskaya-tropa",
+    "src": "../assets/photos/tsarskaya-tropa.jpg",
+    "alt": "Белая ротонда на Солнечной (Царской) тропе",
+    "author": "Автор указан на странице файла",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rotunda_Or_2.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "gora-krestovaya",
+    "src": "../assets/photos/gora-krestovaya.jpg",
+    "alt": "Скала Крестовая над лесом в Ореанде",
+    "author": "Dimant",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Khrestova_mountain.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "mys-martyan",
+    "src": "../assets/photos/mys-martyan.jpg",
+    "alt": "Лесистый мыс Мартьян и морской прибой",
+    "author": "Автор неизвестен",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%B8%D1%81_%D0%9C%D0%B0%D1%80%D1%82%D1%8C%D1%8F%D0%BD.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "yaltinskiy-zapovednik",
+    "src": "../assets/photos/yaltinskiy-zapovednik.jpg",
+    "alt": "Горно-лесной пейзаж Ялтинского заповедника с соснами",
+    "author": "Alltre",
+    "license": "Общественное достояние",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yaltinskij_zapovednik.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "sobor-aleksandra-nevskogo",
+    "src": "../assets/photos/sobor-aleksandra-nevskogo.jpg",
+    "alt": "Собор Александра Невского в Ялте с золотыми куполами",
+    "author": "A.Savin",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crimea_South_Coast_04-14_img12_Yalta_Alexander_Nevsky_Church.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "armyanskaya-tserkov",
+    "src": "../assets/photos/armyanskaya-tserkov.jpg",
+    "alt": "Армянская церковь Святой Рипсиме в Ялте за кованой оградой",
+    "author": "A.Savin",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crimea_South_Coast_04-14_img13_Yalta_Armenian_Church.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "kanatnaya-doroga-ay-petri",
+    "src": "../assets/photos/kanatnaya-doroga-ay-petri.jpg",
+    "alt": "Опора канатной дороги на фоне скал Ай-Петри",
+    "author": "Alexander Kochanov",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9A%D0%B0%D0%BD%D0%B0%D1%82%D0%BD%D0%B0%D1%8F_%D0%B4%D0%BE%D1%80%D0%BE%D0%B3%D0%B0._%D1%81%D0%BF%D1%83%D1%81%D0%BA_%D1%81_%D0%B2%D0%B5%D1%80%D1%88%D0%B8%D0%BD%D1%8B_%D0%90%D0%B9-%D0%9F%D0%B5%D1%82%D1%80%D0%B8._-_panoramio.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "mys-ay-todor",
+    "src": "../assets/photos/mys-ay-todor.jpg",
+    "alt": "Мыс Ай-Тодор и прибрежные скалы",
+    "author": "VascoPlanet",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cape_Ai-Todor.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "massandrovskiy-park",
+    "src": "../assets/photos/massandrovskiy-park.jpg",
+    "alt": "Аллея и скульптура в Массандровском парке",
+    "author": "Lena Krasovska",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B5%D0%B9%D0%B7%D0%B0%D0%B6%D0%BD%D0%B8%D0%B9_%D0%BF%D0%B0%D1%80%D0%BA_%D0%B1%D1%96%D0%BB%D1%8F_%D0%BF%D0%B0%D0%BB%D0%B0%D1%86%D1%83.JPG",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-yalta",
+    "src": "../assets/photos/settlement-yalta.jpg",
+    "alt": "Панорама Ялтинской бухты с городом и горами",
+    "author": "Sealle",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%AF%D0%BB%D1%82%D0%B0,_%D0%B2%D0%B8%D0%B4_%D0%BE%D1%82_%D0%9F%D0%BE%D0%BB%D0%B8%D0%BA%D1%83%D1%80%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BC%D0%B5%D0%BC%D0%BE%D1%80%D0%B8%D0%B0%D0%BB%D0%B0_02.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-gurzuf",
+    "src": "../assets/photos/settlement-gurzuf.jpg",
+    "alt": "Гурзуф у подножия гор, вид с моря",
+    "author": "Luu",
+    "license": "Общественное достояние",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gurzuf_View_from_the_Sea.JPG",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-nikita",
+    "src": "../assets/photos/settlement-nikita.jpg",
+    "alt": "Посёлок Никита среди зелени на склоне у моря",
+    "author": "Alex Voinich",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nikitsy_Palace_-_panoramio.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-massandra",
+    "src": "../assets/photos/settlement-massandra.jpg",
+    "alt": "Вид на Массандру и горы в облачную погоду",
+    "author": "Vyacheslav Argenberg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Massandra,_Panoramic_view,_Crimea.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-livadiya",
+    "src": "../assets/photos/settlement-livadiya.jpg",
+    "alt": "Пальмы и парковая поляна в Ливадии",
+    "author": "Insider",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%A3_%D0%9B%D0%B8%D0%B2%D0%B0%D0%B4%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%B4%D0%B2%D0%BE%D1%80%D1%86%D0%B0.JPG",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-oreanda",
+    "src": "../assets/photos/settlement-oreanda.jpg",
+    "alt": "Побережье Ореанды с видом на море и горы",
+    "author": "V chekhov",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2017.02.25.1421.00_%D0%B0%D0%BB%D1%8C%D1%82%D0%B0%D0%BD%D0%BA%D0%B0-%D0%BD%D0%B0%D0%BF%D1%96%D0%B2%D1%80%D0%BE%D1%82%D0%BE%D0%BD%D0%B4%D0%B0_%D0%BD%D0%B0_%D0%A1%D0%BE%D0%BD%D1%8F%D1%87%D0%BD%D1%96%D0%B9_%D1%81%D1%82%D0%B5%D0%B6%D0%B8%D0%BD%D1%96.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-gaspra",
+    "src": "../assets/photos/settlement-gaspra.jpg",
+    "alt": "Набережная Гаспры и горы Ай-Петринской яйлы",
+    "author": "Dima Sergiyenko",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Haspra_Resorts.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-koreiz",
+    "src": "../assets/photos/settlement-koreiz.jpg",
+    "alt": "Пляж в Кореизе и здания у моря",
+    "author": "Tiia Monto",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Koreiz_-_beach7.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-alupka",
+    "src": "../assets/photos/settlement-alupka.jpg",
+    "alt": "Мавританский портал южного фасада Воронцовского дворца в Алупке",
+    "author": "Tiia Monto",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alupka_castle.jpg",
+    "sourceName": "Wikimedia Commons"
+  },
+  {
+    "id": "settlement-simeiz",
+    "src": "../assets/photos/settlement-simeiz.jpg",
+    "alt": "Симеиз с высоты: посёлок, гора Кошка и море",
+    "author": "Vyacheslav Argenberg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Simeiz,_Crimea.jpg",
+    "sourceName": "Wikimedia Commons"
+  }
+]

@@ -1,0 +1,16 @@
+---
+import { Info } from '@lucide/astro';
+interface Props {
+  kind: 'listing' | 'event';
+}
+const { kind } = Astro.props;
+---
+
+<aside class="flex gap-3 rounded-card border border-terracotta/30 bg-terracotta-soft/60 p-4 text-sm text-terracotta-dark" role="note">
+  <Info size={20} class="mt-0.5 shrink-0" aria-hidden="true" />
+  <p>
+    <strong class="font-semibold">Демо-запись.</strong>
+    {kind === 'event' ? 'Событие' : 'Объект'} создан для проверки интерфейса: название, описание и условия вымышлены, реальные
+    контакты, цены и даты не указаны. Страница закрыта от индексации поисковыми системами.
+  </p>
+</aside>

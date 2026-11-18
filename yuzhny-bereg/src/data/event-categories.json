@@ -1,0 +1,8 @@
+[
+  { "id": "kontserty", "title": "Концерты", "icon": "guitar", "order": 1 },
+  { "id": "festivali", "title": "Фестивали", "icon": "party-popper", "order": 2 },
+  { "id": "vystavki", "title": "Выставки", "icon": "frame", "order": 3 },
+  { "id": "master-klassy", "title": "Мастер-классы", "icon": "palette", "order": 4 },
+  { "id": "sport", "title": "Спортивные мероприятия", "icon": "trophy", "order": 5 },
+  { "id": "ekskursionnye-programmy", "title": "Экскурсионные программы", "icon": "route", "order": 6 }
+]

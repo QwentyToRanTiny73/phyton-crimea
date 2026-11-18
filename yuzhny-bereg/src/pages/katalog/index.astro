@@ -1,0 +1,34 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/layout/PageHeader.astro';
+import CatalogExplorer from '@/components/catalog/CatalogExplorer.astro';
+import { getCatalog } from '@/lib/catalog';
+import { routes } from '@/lib/url';
+
+const catalog = await getCatalog();
+const crumbs = [
+  { label: 'Главная', href: routes.home() },
+  { label: 'Каталог', href: routes.catalog() },
+];
+---
+
+<BaseLayout
+  title="Каталог мест, организаций и услуг Большой Ялты"
+  description="Поиск по достопримечательностям, музеям, кафе, гостиницам, гидам, морским прогулкам и мастерам Большой Ялты. Фильтры по категориям, населённым пунктам и типам услуг."
+  breadcrumbs={crumbs}
+>
+  <PageHeader
+    breadcrumbs={crumbs}
+    eyebrow="Каталог"
+    title="Места, организации и услуги"
+    intro="Ищите по названию и описанию, фильтруйте по категории, посёлку и типу услуги. Ссылку с выбранными фильтрами можно отправить другу."
+  />
+  <div class="container-page py-10">
+    <CatalogExplorer
+      listings={catalog.listings}
+      categories={catalog.categories}
+      settlements={catalog.settlements}
+      serviceTypes={catalog.serviceTypes}
+    />
+  </div>
+</BaseLayout>

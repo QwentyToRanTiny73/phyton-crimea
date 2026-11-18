@@ -1,0 +1,15 @@
+---
+import type { Photo } from '@/types/domain';
+interface Props {
+  photo: Photo;
+  class?: string;
+}
+const { photo, class: className = '' } = Astro.props;
+---
+
+<p class:list={['text-xs text-muted', className]}>
+  Фото: {photo.author} ·
+  {photo.licenseUrl ? <a href={photo.licenseUrl} rel="license noopener" target="_blank" class="underline underline-offset-2 hover:text-graphite">{photo.license}</a> : photo.license}
+  ·
+  <a href={photo.sourceUrl} rel="noopener" target="_blank" class="underline underline-offset-2 hover:text-graphite">{photo.sourceName}</a>
+</p>

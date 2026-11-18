@@ -1,0 +1,31 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/layout/PageHeader.astro';
+import EventsExplorer from '@/components/events/EventsExplorer.astro';
+import { getCatalog } from '@/lib/catalog';
+import { routes } from '@/lib/url';
+
+const catalog = await getCatalog();
+const crumbs = [
+  { label: 'Главная', href: routes.home() },
+  { label: 'Афиша', href: routes.events() },
+];
+---
+
+<BaseLayout
+  title="Афиша Большой Ялты: концерты, фестивали, выставки и мастер-классы"
+  description="События Ялты и Южного берега Крыма: концерты, фестивали, выставки, мастер-классы, спортивные мероприятия и экскурсионные программы. Фильтры по дате и категории."
+  breadcrumbs={crumbs}
+>
+  <PageHeader
+    breadcrumbs={crumbs}
+    eyebrow="Афиша"
+    title="События Большой Ялты"
+    intro="Концерты, фестивали, выставки, мастер-классы, спорт и экскурсионные программы. Выберите период или конкретную дату."
+  >
+    <a href={routes.suggest()} class="btn-secondary mt-6">Добавить событие</a>
+  </PageHeader>
+  <div class="container-page py-10">
+    <EventsExplorer events={catalog.events} categories={catalog.eventCategories} />
+  </div>
+</BaseLayout>
